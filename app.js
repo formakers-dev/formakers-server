@@ -4,22 +4,25 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var config = require('./config')[process.env.NODE_ENV];
 
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;
 
 var router = require('./routes')(app);
 
-var server = app.listen(port, function() {
-  console.log('Express server has started on port ', port);
+var server = app.listen(port, function () {
+    console.log('Express server has started on port ', port);
 });
 
+app.get('/', function(req, res) {
+    res.send('Hello AppBee-dragon')
+});
 
 var db = mongoose.connection;
 db.on('error', console.error);
-db.once('open', function() {
-  console.log('Conencted to mongd server');
+db.once('open', function () {
+    console.log('Conencted to mongd server');
 });
 
 mongoose.connect(config.dbUrl);
