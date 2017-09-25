@@ -1,0 +1,15 @@
+machine:
+  node:
+    version: 6.11.0
+
+dependencies:
+  pre:
+    - rm -rf ./node_modules
+  cache_directories:
+    - ~/.npm
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: serverdragon
