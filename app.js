@@ -29,7 +29,7 @@ passport.deserializeUser(function (user, done) {
 passport.use(new GoogleStrategy({
     clientID: config.google_client_id,
     clientSecret: config.google_client_secret,
-    callbackURL: "http://localhost:8080/auth/google/callback"
+    callbackURL: config.baseUrl + "/auth/google/callback"
 }, function (accessToken, refreshToken, profile, done) {
 
     console.log("#### google auth callback");
