@@ -29,7 +29,7 @@ passport.deserializeUser(function (user, done) {
 passport.use(new GoogleStrategy({
     clientID: config.google_client_id,
     clientSecret: config.google_client_secret,
-    callbackURL: "/auth/google/callback"
+    callbackURL: config.baseUrl + "/auth/google/callback"
 }, function (accessToken, refreshToken, profile, done) {
 
     console.log("#### google auth callback");
@@ -73,13 +73,13 @@ app.get('/login_success', ensureAuthenticated, function (req, res) {
     console.log('### givenName : ' + givenName);
     //res.send(req.user);
 
-    res.redirect('http://localhost:3000?familyName=' + familyName + '&givenName=' + givenName);
+    res.redirect(config.frontendBaseUrl + '?familyName=' + familyName + '&givenName=' + givenName);
 });
 
 app.get('/logout', function (req, res) {
     req.logout();
     console.log("### logout");
-    res.redirect('http://localhost:3000');
+    res.redirect(config.frontendBaseUrl);
 });
 
 function ensureAuthenticated(req, res, next) {
