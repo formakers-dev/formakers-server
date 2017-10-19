@@ -6,7 +6,7 @@ const config = require('../config')[process.env.NODE_ENV];
 router.post('/', function (req, res) {
     const key = config.firebase.serverKey;
     const registrationIds = [
-        "fI2-FeMO4mA:APA91bHKGTj9es1TJAt34__LEsrLI14jauylVbL8H-hji-TxWbHo5WOiRB7RweTmG4tDcuPsiJXPDK-qh-vxe5Zz-Qlcj4A07Y_kUrpPW1O4CSwaaXUMoQBFezDffaDq7wKmkdJOjuUV"
+        "e3JRra62KqQ:APA91bFmO5Nww-F7DbRHL-yK3uJ36VDN1MrTfqbdL1T4ykTNCdWW677LrsOEgQZIbPWhwYK4nB-3lCkSoQfiTY_sWB0Vz6UM3cd9h5mfND5al13xHy1YXNf8mdD5aqOM_E13qlTVNUSt"
     ];
     const notification = {
         'title': '[AppBee] 앱비에서 새로운 테스트가 도착했어요',
