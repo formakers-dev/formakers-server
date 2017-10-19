@@ -7,7 +7,6 @@ const cors = require('cors');
 const http = require('http');
 const port = config.port;
 const passport = require('passport');
-const authRouter = require('./routers/auth');
 
 require('./db').init();
 
@@ -21,9 +20,10 @@ app.use(session({secret: 'appbeeSecret'}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
-app.use('/auth', authRouter);
-
-const router = require('./routers')(app);
+app.use('/auth', require('./routers/auth'));
+app.use('/app', require('./routers/app'));
+app.use('/user', require('./routers/user'));
+app.use('/notification', require('./routers/notification'));
 
 app.get('/', function (req, res) {
     res.send('Hello AppBee-dragon')
