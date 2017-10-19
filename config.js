@@ -12,8 +12,7 @@ module.exports = {
     },
     test: {
         baseUrl: process.env.BASE_URL || 'http://localhost:8080',
-        frontendBaseUrl: process.env.FRONTEND_BASE_URL || 'http://localhost:3000',
         dbUrl: process.env.MONGO_URL,
-        port: process.env.PORT || 3000,
+        port: process.env.PORT || 8080
     }
 };
