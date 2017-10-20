@@ -16,7 +16,14 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(session({secret: 'appbeeSecret'}));
+app.use(session({secret: 'appbeeSecret',
+    saveUninitialized: true,
+    resave: false,
+    cookie: {
+        path: "/",
+    }
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());

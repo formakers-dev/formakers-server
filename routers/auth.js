@@ -7,6 +7,7 @@ const config = require('../config')[process.env.NODE_ENV];
 // serialize
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
+    //TODO : 세션에 ID, Provider 만 저장
     console.log('serialize');
     done(null, user);
 });
@@ -23,7 +24,7 @@ passport.use(new GoogleStrategy({
     clientSecret: config.google_client_secret,
     callbackURL: config.baseUrl + "/auth/google/callback"
 }, function (accessToken, refreshToken, profile, done) {
-
+    //TODO : 프로파일 기반으로 DB에 USER정보 업데이트, USER_ID는 Provider + ID 로 통일
     console.log("#### google auth callback");
     console.log("#### accessToken\n" + accessToken);
     console.log("#### refreshToken\n" + refreshToken);
@@ -58,6 +59,8 @@ router.get('/logout', function (req, res) {
     res.redirect(config.frontendBaseUrl);
 });
 
+
+//TODO : 미들웨어로 분리
 function ensureAuthenticated(req, res, next) {
     // 로그인이 되어 있으면, 다음 파이프라인으로 진행
     if (req.isAuthenticated()) {
