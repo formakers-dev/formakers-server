@@ -25,7 +25,7 @@ app.use(session({secret: 'appbeeSecret',
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
+app.use(cors({origin: config.frontendBaseUrl, credentials: true}));
 app.use('/auth', require('./routers/auth'));
 app.use('/app', require('./routers/app'));
 app.use('/user', require('./routers/user'));
