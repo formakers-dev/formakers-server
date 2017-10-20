@@ -18,7 +18,8 @@ const config = {
         google_client_secret: 'testClientSecret',
         firebase: {
             serverKey: 'testServerKey'
-        }
+        },
+        testUserId: 'google115838807161306170827',
     }
 };
 
