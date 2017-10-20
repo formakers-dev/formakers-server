@@ -8,6 +8,10 @@ dependencies:
   cache_directories:
     - ~/.npm
 
+test:
+  post:
+    - npm test
+
 deployment:
   staging:
     branch: master

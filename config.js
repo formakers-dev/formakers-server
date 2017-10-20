@@ -11,9 +11,14 @@ const config = {
         }
     },
     test: {
-        baseUrl: process.env.BASE_URL || 'http://localhost:8080',
+        baseUrl: 'http://localhost:8081',
         dbUrl: process.env.MONGO_URL,
-        port: process.env.PORT || 8080
+        port: 8081,
+        google_client_id: 'testClientId',
+        google_client_secret: 'testClientSecret',
+        firebase: {
+            serverKey: 'testServerKey'
+        }
     }
 };
 

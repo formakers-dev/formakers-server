@@ -1,12 +1,20 @@
 const Apps = require('../models/apps');
 
 const getApps = (req, res) => {
-    Apps.find({appName: new RegExp(req.query.keyword, "i")}, function (err, result) {
-        if (err) {
-            return res.status(500).json({error: err});
-        }
-        res.json(result);
-    })
+    if (!req.query.keyword) {
+        res.send(412);
+    } else {
+        Apps.find({appName: new RegExp(req.query.keyword, "i")})
+            .exec()
+            .then(result => {
+                if (result.length === 0) {
+                    res.send(204);
+                } else {
+                    res.json(result);
+                }
+            })
+            .catch(err => res.status(500).json({error: err}));
+    }
 };
 
-module.exports = { getApps };
+module.exports = {getApps};
