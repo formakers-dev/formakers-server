@@ -3,20 +3,18 @@ const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const config = require('../config')[process.env.NODE_ENV];
+const Customers = require('../models/customers');
 
 // serialize
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
-    //TODO : 세션에 ID, Provider 만 저장
-    console.log('serialize');
-    done(null, user);
+    done(null, user.provider + user.id);
 });
 
 // deserialize
 // 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
-passport.deserializeUser(function (user, done) {
-    console.log('deserialize');
-    done(null, user);
+passport.deserializeUser(function (userId, done) {
+    done(null, userId);
 });
 
 passport.use(new GoogleStrategy({
@@ -24,12 +22,17 @@ passport.use(new GoogleStrategy({
     clientSecret: config.google_client_secret,
     callbackURL: config.baseUrl + "/auth/google/callback"
 }, function (accessToken, refreshToken, profile, done) {
-    //TODO : 프로파일 기반으로 DB에 USER정보 업데이트, USER_ID는 Provider + ID 로 통일
-    console.log("#### google auth callback");
-    console.log("#### accessToken\n" + accessToken);
-    console.log("#### refreshToken\n" + refreshToken);
-    console.log("#### profile\n" + profile);
-    done(null, profile);
+    let customer = {};
+    customer.id = profile.provider + profile.id;
+    customer.provider = profile.displayName;
+    customer.providerId = profile.id;
+    customer.name = profile.displayName;
+    customer.email = (profile.emails)? profile.emails[0].value : "";
+
+    Customers.findOneAndUpdate({ id : customer.id }, { $set : customer }, { upsert : true })
+        .exec()
+        .then(() => done(null, profile))
+        .catch((err) => done(err));
 }));
 
 router.get('/google', passport.authenticate('google', {scope: ['email', 'profile']}));
@@ -37,20 +40,7 @@ router.get('/google/callback', passport.authenticate('google', {successRedirect:
 
 
 router.get('/login_success', ensureAuthenticated, function (req, res) {
-    console.log('### login success');
-    console.log('### user' + req.user);
-
-    const user = req.user;
-    const provider = user.provider;
-    const id = user.id;
-    const displayName = user.displayName;
-
-    console.log('### provider : ' + provider);
-    console.log('### id : ' + id);
-    console.log('### displayName : ' + user.displayName);
-    console.log('### emails : ' + user.emails[0].value);
-
-    res.redirect(config.frontendBaseUrl + '?displayName=' + displayName);
+    res.redirect(config.frontendBaseUrl);
 });
 
 router.get('/logout', function (req, res) {

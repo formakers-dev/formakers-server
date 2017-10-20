@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Users = require('../models/users');
+const Customers = require('../models/customers');
 
 router.get('/count', function (req, res) {
-    Users.find(function (err, result) {
+    Customers.find(function (err, result) {
         if (err) {
             return res.status(500).json({error: err});
         }
