@@ -6,6 +6,7 @@ const cors = require('cors');
 const http = require('http');
 const port = require('./config').port;
 const passport = require('passport');
+const config = require('./config');
 
 require('./db').init();
 
