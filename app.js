@@ -2,10 +2,9 @@ const express = require('express');
 const session = require('express-session');
 const app = express();
 const bodyParser = require('body-parser');
-const config = require('./config')[process.env.NODE_ENV];
 const cors = require('cors');
 const http = require('http');
-const port = config.port;
+const port = require('./config').port;
 const passport = require('passport');
 
 require('./db').init();

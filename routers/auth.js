@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 const Customers = require('../models/customers');
 const Middleware = require('../middlewares/middleware');
 

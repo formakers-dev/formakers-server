@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const config = require('../config')[process.env.NODE_ENV];
+const config = require('../config');
 
 router.post('/', function (req, res) {
     const key = config.firebase.serverKey;

@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
     development : {
         baseUrl: process.env.BASE_URL || 'http://localhost:8080',
         frontendBaseUrl: process.env.FRONTEND_BASE_URL || 'http://localhost:3000',
@@ -16,3 +16,5 @@ module.exports = {
         port: process.env.PORT || 8080
     }
 };
+
+module.exports = config[process.env.NODE_ENV];
