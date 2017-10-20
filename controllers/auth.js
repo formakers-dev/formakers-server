@@ -1,18 +1,13 @@
-const express = require('express');
-const router = express.Router();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const config = require('../config');
 const Customers = require('../models/customers');
-const Middleware = require('../middlewares/middleware');
 
-// serialize
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
     done(null, user.provider + user.id);
 });
 
-// deserialize
 // 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
 passport.deserializeUser(function (userId, done) {
     done(null, userId);
@@ -36,18 +31,14 @@ passport.use(new GoogleStrategy({
         .catch((err) => done(err));
 }));
 
-router.get('/google', passport.authenticate('google', {scope: ['email', 'profile']}));
-router.get('/google/callback', passport.authenticate('google', {successRedirect: '/auth/login_success', failureRedirect: '/auth/login_fail'}));
+const googleAuth = passport.authenticate('google', {scope: ['email', 'profile']});
+const googleAuthCallback = passport.authenticate('google', {successRedirect: '/auth/login_success', failureRedirect: '/auth/login_fail'});
+const loginSuccess = (req, res) => res.redirect(config.frontendBaseUrl);
+const loginFail = (req, res) => res.redirect(config.frontendBaseUrl + "/login");
 
-
-router.get('/login_success', Middleware.auth, function (req, res) {
-    res.redirect(config.frontendBaseUrl);
-});
-
-router.get('/logout', function (req, res) {
+const logout = (req, res) => {
     req.logout();
-    console.log("### logout");
     res.redirect(config.frontendBaseUrl);
-});
+};
 
-module.exports = router;
+module.exports = {googleAuth, googleAuthCallback, loginSuccess, loginFail, logout};

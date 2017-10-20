@@ -1,9 +1,7 @@
-const express = require('express');
-const router = express.Router();
 const axios = require('axios');
 const config = require('../config');
 
-router.post('/', function (req, res) {
+const postNotification = (req, res) => {
     const key = config.firebase.serverKey;
     const registrationIds = [
         "e3JRra62KqQ:APA91bFmO5Nww-F7DbRHL-yK3uJ36VDN1MrTfqbdL1T4ykTNCdWW677LrsOEgQZIbPWhwYK4nB-3lCkSoQfiTY_sWB0Vz6UM3cd9h5mfND5al13xHy1YXNf8mdD5aqOM_E13qlTVNUSt"
@@ -29,6 +27,6 @@ router.post('/', function (req, res) {
         console.error(error);
         res.json(false);
     });
-});
+};
 
-module.exports = router;
+module.exports = { postNotification };

@@ -27,14 +27,7 @@ app.use(session({secret: 'appbeeSecret',
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors({origin: config.frontendBaseUrl, credentials: true}));
-app.use('/auth', require('./routers/auth'));
-app.use('/app', require('./routers/app'));
-app.use('/user', require('./routers/user'));
-app.use('/notification', require('./routers/notification'));
-
-app.get('/', function (req, res) {
-    res.send('Hello AppBee-dragon')
-});
+app.use('/', require('./routers/router'));
 
 http.createServer(app).listen(port, function () {
     console.log('Express server listening on port ' + port);
