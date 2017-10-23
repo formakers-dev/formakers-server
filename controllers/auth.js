@@ -33,7 +33,7 @@ passport.use(new GoogleStrategy({
 
 const googleAuth = passport.authenticate('google', {scope: ['email', 'profile']});
 const googleAuthCallback = passport.authenticate('google', {successRedirect: '/auth/login_success', failureRedirect: '/auth/login_fail'});
-const loginSuccess = (req, res) => res.redirect(config.frontendBaseUrl + "/my_page");
+const loginSuccess = (req, res) => res.redirect(config.frontendBaseUrl);
 const loginFail = (req, res) => res.redirect(config.frontendBaseUrl);
 
 const logout = (req, res) => {
