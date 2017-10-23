@@ -10,14 +10,14 @@ router.get('/auth/google', AuthController.googleAuth);
 router.get('/auth/google/callback', AuthController.googleAuthCallback);
 router.get('/auth/login_success', Middleware.auth, AuthController.loginSuccess);
 router.get('/auth/login_fail', AuthController.loginFail);
-router.get('/auth/logout', AuthController.logout);
+router.get('/auth/logout', Middleware.auth, AuthController.logout);
 router.get('/auth/check_login', Middleware.auth, (req, res) => res.send(200));
 
-router.post('/notification', NotificationController.postNotification);
+router.post('/notification', Middleware.auth, NotificationController.postNotification);
 
-router.get('/app', AppsController.getApps);
+router.get('/app', Middleware.auth, AppsController.getApps);
 
-router.get('/user/count', UsersController.getUserCount);
+router.get('/user/count', Middleware.auth, UsersController.getUserCount);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
