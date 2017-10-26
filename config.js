@@ -6,8 +6,13 @@ const config = {
         port: process.env.PORT || 8080,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         google_client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        firebase: {
+        firebase_messaging: {
             serverKey: process.env.SERVER_KEY
+        },
+        firebase: {
+            apiKey: process.env.FIREBASE_API_KEY,
+            databaseURL: process.env.FIREBASE_DATABASE_URL,
+            projectId: process.env.FIREBASE_DRAGON_SERVER_PROJECT_ID,
         }
     },
     test: {
