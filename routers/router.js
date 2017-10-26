@@ -6,6 +6,7 @@ const NotificationController = require('../controllers/notification');
 const AppsController = require('../controllers/app');
 const UsersController = require('../controllers/user');
 const Email = require('../controllers/email');
+const Project = require('../controllers/project');
 
 router.get('/auth/google', AuthController.googleAuth);
 router.get('/auth/google/callback', AuthController.googleAuthCallback);
@@ -21,6 +22,10 @@ router.get('/app', Middleware.auth, AppsController.getApps);
 router.get('/user/count', Middleware.auth, UsersController.getUserCount);
 
 router.post('/email', Email.save);
+
+router.post('/project', Project.postProject);
+router.get('/project', Project.getProject);
+router.get('/projects', Project.getAllProjects);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
