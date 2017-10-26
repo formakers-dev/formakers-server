@@ -21,8 +21,13 @@ const config = {
         port: 8081,
         google_client_id: 'testClientId',
         google_client_secret: 'testClientSecret',
-        firebase: {
+        firebase_messaging: {
             serverKey: 'testServerKey'
+        },
+        firebase: {
+            apiKey: process.env.FIREBASE_API_KEY,
+            databaseURL: process.env.FIREBASE_DATABASE_URL,
+            projectId: process.env.FIREBASE_DRAGON_SERVER_PROJECT_ID,
         },
         testUserId: 'google115838807161306170827',
     }

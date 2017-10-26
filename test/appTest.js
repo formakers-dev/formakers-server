@@ -14,7 +14,7 @@ describe('App', () => {
             request.get('/app?keyword=Kakao')
                 .expect(200)
                 .end((err, res) => {
-                    res.body.length.should.be.eql(205);
+                    res.body.length.should.be.eql(61);
                     res.body[0].appName.should.be.contains("Kakao");
                     done();
                 });
