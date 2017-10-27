@@ -2,36 +2,36 @@ const Projects = require('../models/projects');
 
 const postProject = (req, res) => {
     const data = req.body;
-    const projectId = data.projectId || Number(new Date());
 
-    Projects.findOneAndUpdate({$and : [{projectId: projectId, customerId: data.customerId}, ]}, { $set: data }, {upsert: true})
-        .exec()
-        .then(() => {
-            res.send(200);
-        })
-        .catch((err) => {
-            res.send(err);
+    if (data.projectId) {
+        Projects.findOneAndUpdate({projectId: data.projectId}, {$set: data}, {upsert: true})
+            .exec()
+            .then(res.sendStatus(200))
+            .catch((err) => res.send(err));
+
+    } else {
+        Projects.create(data, (err) => {
+            (err) ? res.send(err) : res.sendStatus(200);
         });
+    }
 };
 
 const getProject = (req, res) => {
     const projectId = req.query.projectId;
 
-    Projects.find({projectId: projectId}, (err, result) => {
-        if(err) {
-            return res.status(500).json({error: err});
-        }
-        res.json(result);
-    });
+    if (projectId) {
+        Projects.find({$and: [{projectId: projectId}, {customerId: req.user.id}]}).exec()
+            .then(result => res.json(result))
+            .catch(err => res.status(500).json({error: err}));
+    } else {
+        res.sendStatus(500);
+    }
 };
 
 const getAllProjects = (req, res) => {
-    Projects.find((err, result) => {
-        if(err) {
-            return res.status(500).json({error: err});
-        }
-        res.json(result);
+    Projects.find({customerId: req.user.id}, (err, result) => {
+        (err) ? res.status(500).json({error: err}) : res.json(result);
     });
 };
 
-module.exports = { postProject, getProject, getAllProjects};
+module.exports = {postProject, getProject, getAllProjects};

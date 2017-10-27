@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 const Schema = mongoose.Schema;
 
 const projectSchema = new Schema({
-    projectId: String,
+    projectId: Number,
     customerId: String,
     name: String,
     introduce: String,
@@ -14,5 +15,7 @@ const projectSchema = new Schema({
     interview: Object,
     status: Number
 });
+
+projectSchema.plugin(autoIncrement.plugin, { model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1 });
 
 module.exports = mongoose.model('projects', projectSchema);

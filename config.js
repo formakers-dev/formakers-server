@@ -29,8 +29,8 @@ const config = {
             databaseURL: process.env.FIREBASE_DATABASE_URL,
             projectId: process.env.FIREBASE_DRAGON_SERVER_PROJECT_ID,
         },
-        testCustomerId: 'google115838807161306170827',
-        testProjectId: '1508998212204',
+        testCustomerId: 'googleTestCustomerId',
+        testProjectId: 99999999,
     }
 };
 

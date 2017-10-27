@@ -23,9 +23,9 @@ router.get('/user/count', Middleware.auth, UsersController.getUserCount);
 
 router.post('/email', Email.save);
 
-router.post('/project', Project.postProject);
-router.get('/project', Project.getProject);
-router.get('/projects', Project.getAllProjects);
+router.post('/project', Middleware.auth, Project.postProject);
+router.get('/project', Middleware.auth, Project.getProject);
+router.get('/projects', Middleware.auth, Project.getAllProjects);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
