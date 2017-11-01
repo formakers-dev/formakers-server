@@ -33,7 +33,7 @@ describe('Project', () => {
                 "plan": "피드백"
             }]
         },
-        "status": 0
+        "status": "temporary"
     };
 
     beforeEach(() => {
@@ -66,29 +66,29 @@ describe('Project', () => {
                         Projects.find({$and: [{customerId: data.customerId}, {projectId: data.projectId}]})
                             .then((res) => {
                                 const body = res[0];
+                                body.projectId.should.be.eql(config.testProjectId);
+                                body.customerId.should.be.eql(config.testCustomerId);
+                                body.name.should.be.eql('old-test-project');
+                                body.introduce.should.be.eql('간단소개');
+                                body.images.should.be.eql(["/image1", "/image2"]);
+                                body.apps.should.be.eql(["com.kakao.talk"]);
+                                body.interviewer_introduce.should.be.eql("인터뷰 진행자 소개!!!");
                                 body.description.should.be.eql('프로젝트 상세 설명 수정');
-                                expect(body).has.property('projectId');
-                                expect(body).has.property('customerId');
-                                expect(body).has.property('name');
-                                expect(body).has.property('introduce');
-                                expect(body).has.property('images');
-                                expect(body).has.property('apps');
-                                expect(body).has.property('interviewer_introduce');
-                                expect(body).has.property('description');
-                                expect(body).has.property('description_images');
-                                expect(body).has.property('interview');
-                                expect(body.interview).has.property('type');
-                                expect(body.interview).has.property('location_negotiable');
-                                expect(body.interview).has.property('location');
-                                expect(body.interview).has.property('open_date');
-                                expect(body.interview).has.property('close_date');
-                                expect(body.interview).has.property('date_negotiable');
-                                expect(body.interview).has.property('start_date');
-                                expect(body.interview).has.property('end_date');
-                                expect(body.interview).has.property('plans');
-                                expect(body.interview.plans[0]).has.property('minute');
-                                expect(body.interview.plans[0]).has.property('plan');
-                                expect(body).has.property('status');
+                                body.description_images.should.be.eql(["/desc/image1", "/desc/image2"]);
+                                body.interview.type.should.be.eql(1);
+                                body.interview.location_negotiable.should.be.eql(false);
+                                body.interview.location.should.be.eql("향군타워 5층");
+                                body.interview.open_date.should.be.eql("20171011");
+                                body.interview.close_date.should.be.eql("20171016");
+                                body.interview.date_negotiable.should.be.eql(false);
+                                body.interview.start_date.should.be.eql("20171101");
+                                body.interview.end_date.should.be.eql("20171131");
+                                body.interview.plans.should.be.eql([
+                                    {"minute": 10, "plan": "제품 소개"},
+                                    {"minute": 30, "plan": "테스트진행"},
+                                    {"minute": 20, "plan": "피드백"}
+                                ]);
+                                body.status.should.be.eql("temporary");
 
                                 done();
                             });

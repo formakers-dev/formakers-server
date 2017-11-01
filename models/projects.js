@@ -13,7 +13,7 @@ const projectSchema = new Schema({
     description: String,
     description_images: Array,
     interview: Object,
-    status: Number
+    status: String
 });
 
 projectSchema.plugin(autoIncrement.plugin, { model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1 });
