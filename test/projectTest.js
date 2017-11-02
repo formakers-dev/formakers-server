@@ -38,7 +38,7 @@ describe('Project', () => {
 
     beforeEach(() => {
         server.request.isAuthenticated = () => true;
-        server.request.user = { id: config.testCustomerId };
+        server.request.user = {id: config.testCustomerId};
     });
 
     describe('POST /project', () => {
@@ -54,7 +54,7 @@ describe('Project', () => {
         describe('기존 데이터인 경우 테스트', () => {
             data.description = '프로젝트 상세 설명 수정';
 
-            beforeEach('테스트 전 데이터 등록', done => {
+            beforeEach(done => {
                 Projects.create(data, () => done());
             });
 
@@ -97,39 +97,58 @@ describe('Project', () => {
         });
     });
 
-    describe('GET /projects', () => {
-        beforeEach('테스트 전 데이터 생성', done => {
-            Projects.create(data, () => done());
+    describe('프로젝트 데이터가 등록된 상황에서', () => {
+        const notMyProjectData = {
+            "projectId": "someoneProjectId",
+            "customerId": "someoneId",
+            "name": "not-my-project"
+        };
+
+        beforeEach(done => {
+            Projects.create(data, () => {
+                Projects.create(notMyProjectData, () => done());
+            });
         });
 
-        it('프로젝트 목록 조회', done => {
-            request.get('/projects')
-                .expect(200)
-                .end((err, res) => {
-                    expect(res.body.length).to.be.eql(1);
-                    done();
-                });
+        describe('GET /projects', () => {
+            it('프로젝트 목록 조회 시 본인의 프로젝트목록만 리턴한다', done => {
+                request.get('/projects')
+                    .expect(200)
+                    .end((err, res) => {
+                        console.log(res.body);
+                        expect(res.body.length).to.be.eql(1);
+                        done();
+                    });
+            });
+        });
+
+        describe('GET /project', () => {
+            it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
+                request.get('/project?projectId=' + data.projectId)
+                    .expect(200)
+                    .end((err, res) => {
+                        res.body.length.should.be.eql(1);
+                        res.body[0].projectId.should.be.eql(data.projectId);
+                        done();
+                    });
+            });
+
+            it('본인의 데이터가 아닌 경우 서버 오류를 리턴한다', done => {
+                request.get('/project?projectId=' + data.projectId)
+                    .expect(500)
+                    .end(() => done());
+            });
+        });
+
+        afterEach(done => {
+            Projects.remove({customerId: notMyProjectData.customerId})
+                .exec()
+                .then(done());
         });
     });
 
-    describe('GET /project', () => {
-        beforeEach('테스트 전 데이터 생성', done => {
-            Projects.create(data, () => done());
-        });
-
-        it('프로젝트 단건 조회', done => {
-            request.get('/project?projectId=' + config.testProjectId)
-                .expect(200)
-                .end((err, res) => {
-                    res.body.length.should.be.eql(1);
-                    res.body[0].projectId.should.be.eql(config.testProjectId);
-                    done();
-                });
-        });
-    });
-
-    afterEach('테스트 후 테스트 데이터 삭제', done=> {
-        Projects.remove({customerId: config.testCustomerId})
+    afterEach(done => {
+        Projects.remove({customerId: data.customerId})
             .exec()
             .then(done());
     });
