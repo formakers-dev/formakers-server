@@ -115,8 +115,8 @@ describe('Project', () => {
                 request.get('/projects')
                     .expect(200)
                     .end((err, res) => {
-                        console.log(res.body);
                         expect(res.body.length).to.be.eql(1);
+                        expect(res.body[0].customerId).to.be.eql(config.testCustomerId);
                         done();
                     });
             });
