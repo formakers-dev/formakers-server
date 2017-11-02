@@ -11,7 +11,6 @@ describe('Project', () => {
 
     const data = {
         "projectId": config.testProjectId,
-        "customerId": config.testCustomerId,
         "name": "old-test-project",
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
@@ -38,7 +37,7 @@ describe('Project', () => {
 
     beforeEach(() => {
         server.request.isAuthenticated = () => true;
-        server.request.user = {id: config.testCustomerId};
+        server.request.user = config.testCustomerId;
     });
 
     describe('POST /project', () => {
@@ -63,7 +62,7 @@ describe('Project', () => {
                     .send(data)
                     .expect(200)
                     .then(() => {
-                        Projects.find({$and: [{customerId: data.customerId}, {projectId: data.projectId}]})
+                        Projects.find({$and: [{projectId: data.projectId}]})
                             .then((res) => {
                                 const body = res[0];
                                 body.projectId.should.be.eql(config.testProjectId);
