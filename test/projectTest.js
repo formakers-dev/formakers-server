@@ -15,7 +15,6 @@ describe('Project', () => {
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
         "apps": ["com.kakao.talk"],
-        "interviewer_introduce": "인터뷰 진행자 소개!!!",
         "description": "프로젝트 상세 설명",
         "description_images": ["/desc/image1", "/desc/image2"],
         "interview": {
@@ -32,7 +31,12 @@ describe('Project', () => {
                 "plan": "피드백"
             }]
         },
-        "status": "temporary"
+        "status": "temporary",
+        "interviewer": {
+            "name": "혜리",
+            "url": "https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a",
+            "introduce": "툰스토리 디자이너"
+        }
     };
 
     beforeEach(() => {
@@ -71,7 +75,6 @@ describe('Project', () => {
                                 body.introduce.should.be.eql('간단소개');
                                 body.images.should.be.eql(["/image1", "/image2"]);
                                 body.apps.should.be.eql(["com.kakao.talk"]);
-                                body.interviewer_introduce.should.be.eql("인터뷰 진행자 소개!!!");
                                 body.description.should.be.eql('프로젝트 상세 설명 수정');
                                 body.description_images.should.be.eql(["/desc/image1", "/desc/image2"]);
                                 body.interview.type.should.be.eql(1);
@@ -88,6 +91,9 @@ describe('Project', () => {
                                     {"minute": 20, "plan": "피드백"}
                                 ]);
                                 body.status.should.be.eql("temporary");
+                                body.interviewer.name.should.be.eql("혜리");
+                                body.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
+                                body.interviewer.introduce.should.be.eql("툰스토리 디자이너");
 
                                 done();
                             });

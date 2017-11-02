@@ -9,11 +9,11 @@ const projectSchema = new Schema({
     introduce: String,
     images: Array,
     apps: Array,
-    interviewer_introduce: String,
     description: String,
     description_images: Array,
     interview: Object,
-    status: String
+    status: String,
+    interviewer: Object
 });
 
 projectSchema.plugin(autoIncrement.plugin, { model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1 });
