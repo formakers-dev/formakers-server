@@ -5,6 +5,7 @@ const getApps = (req, res) => {
         res.send(412);
     } else {
         Apps.find({appName: new RegExp(req.query.keyword, "i")})
+            .limit(5)
             .exec()
             .then(result => {
                 if (result.length === 0) {

@@ -10,11 +10,11 @@ describe('App', () => {
             server.request.isAuthenticated = () => true;
         });
 
-        it('키워드로 앱이름을 검색하여 결과리스트를 리턴한다', done => {
+        it('키워드로 앱이름을 검색하여 결과를 최대 5개만 리턴한다', done => {
             request.get('/app?keyword=Kakao')
                 .expect(200)
                 .end((err, res) => {
-                    res.body.length.should.be.eql(61);
+                    res.body.length.should.be.eql(5);
                     res.body[0].appName.should.be.contains("Kakao");
                     done();
                 });
