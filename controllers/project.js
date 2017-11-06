@@ -1,20 +1,27 @@
 const Projects = require('../models/projects');
+const AppUsagesController = require('../controllers/appUsages');
+const NotificationController = require('../controllers/notification');
 
 const postProject = (req, res) => {
     const data = req.body;
     data.customerId = req.user;
 
+    let projectPromise;
     if (data.projectId) {
-        Projects.findOneAndUpdate({projectId: data.projectId}, {$set: data}, {upsert: true})
-            .exec()
-            .then(res.sendStatus(200))
-            .catch((err) => res.send(err));
-
+        projectPromise = Projects.findOneAndUpdate({projectId: data.projectId}, {$set: data}, {upsert: true});
     } else {
-        Projects.create(data, (err) => {
-            (err) ? res.send(err) : res.sendStatus(200);
-        });
+        projectPromise = Projects.create(data);
     }
+
+    if (data.status === "registered") {
+        projectPromise = projectPromise
+            .then(() => AppUsagesController.getUserListByPackageName(data.apps[0]))
+            .then((result) => NotificationController.sendNotification(result));
+    }
+
+    projectPromise
+        .then(() => res.sendStatus(200))
+        .catch((err) => res.send(err));
 };
 
 const getProject = (req, res) => {
