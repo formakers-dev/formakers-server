@@ -125,6 +125,23 @@ describe('Project', () => {
                 })
         });
 
+        it('status가 registered이고 유사앱유저의 registrationId가 없는 경우 알림을 보내지 않는다', (done) => {
+            data.status = 'registered';
+
+            const stubGetUserListByPackageName = sandbox.stub(AppUsagesController, 'getUserListByPackageName');
+            const registrationIdList = [];
+            stubGetUserListByPackageName.withArgs(data.apps[0]).returns(Promise.resolve(registrationIdList));
+            const spyOnSendNotification = sandbox.spy(NotificationController, 'sendNotification');
+            request.post('/project')
+                .send(data)
+                .expect(200)
+                .end(() => {
+                    sinon.assert.calledOnce(stubGetUserListByPackageName);
+                    sinon.assert.notCalled(spyOnSendNotification);
+                    done();
+                })
+        });
+
         it('status가 registered가 아닌 경우 유저리스트를 검색하지 않고, 알림을 보내지 않는다.', (done) => {
             data.status = 'temporary';
 

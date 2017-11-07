@@ -14,14 +14,23 @@ const postProject = (req, res) => {
     }
 
     if (data.status === "registered") {
-        projectPromise = projectPromise
+        projectPromise
             .then(() => AppUsagesController.getUserListByPackageName(data.apps[0]))
-            .then((result) => NotificationController.sendNotification(result));
+            .then((result) => {
+                if(result.length > 0) {
+                    NotificationController.sendNotification(result);
+                }
+            })
+            .then(() => res.sendStatus(200))
+            .catch((err) => {
+                console.error(err);
+                res.send(err)
+            });
+    } else {
+        projectPromise
+            .then(() => res.sendStatus(200))
+            .catch((err) => res.send(err));
     }
-
-    projectPromise
-        .then(() => res.sendStatus(200))
-        .catch((err) => res.send(err));
 };
 
 const getProject = (req, res) => {

@@ -2,8 +2,11 @@ const axios = require('axios');
 const config = require('../config');
 
 const sendNotification = (registrationIds) => {
-    const key = config.firebase_messaging.serverKey;
+    if(!registrationIds || registrationIds.length <= 0) {
+        return new Error("registrationId가 없습니다.");
+    }
 
+    const key = config.firebase_messaging.serverKey;
     const notification = {
         'title': '[AppBee] 앱비에서 새로운 테스트가 도착했어요',
         'body': '테스트를 한번 확인해 보세요.',
