@@ -10,7 +10,7 @@ const projectSchema = new Schema({
     images: Array,
     apps: Array,
     description: String,
-    description_images: Array,
+    descriptionImages: Array,
     interview: Object,
     status: String,
     interviewer: Object

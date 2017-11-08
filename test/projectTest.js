@@ -21,16 +21,16 @@ describe('Project', () => {
         "images": ["/image1", "/image2"],
         "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
-        "description_images": ["/desc/image1", "/desc/image2"],
+        "descriptionImages": ["/desc/image1", "/desc/image2"],
         "interview": {
             "type": 1,
             "location_negotiable": false,
             "location": "향군타워 5층",
-            "open_date": "20171011",
-            "close_date": "20171016",
-            "date_negotiable": false,
-            "start_date": "20171101",
-            "end_date": "20171131",
+            "openDate": "20171011",
+            "closeDate": "20171016",
+            "dateNegotiable": false,
+            "startDate": "20171101",
+            "endDate": "20171131",
             "plans": [{"minute": 10, "plan": "제품 소개"}, {"minute": 30, "plan": "테스트진행"}, {
                 "minute": 20,
                 "plan": "피드백"
@@ -51,16 +51,16 @@ describe('Project', () => {
         "images": ["/image1", "/image2"],
         "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
-        "description_images": ["/desc/image1", "/desc/image2"],
+        "descriptionImages": ["/desc/image1", "/desc/image2"],
         "interview": {
             "type": 1,
-            "location_negotiable": false,
+            "locationNegotiable": false,
             "location": "향군타워 5층",
-            "open_date": "20171011",
-            "close_date": "20171016",
-            "date_negotiable": false,
-            "start_date": "20171101",
-            "end_date": "20171131",
+            "openDate": "20171011",
+            "closeDate": "20171016",
+            "dateNegotiable": false,
+            "startDate": "20171101",
+            "endDate": "20171131",
             "plans": [{"minute": 10, "plan": "제품 소개"}, {"minute": 30, "plan": "테스트진행"}, {
                 "minute": 20,
                 "plan": "피드백"
@@ -110,15 +110,15 @@ describe('Project', () => {
                                 body.images.should.be.eql(["/image1", "/image2"]);
                                 body.apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
                                 body.description.should.be.eql('프로젝트 상세 설명 수정');
-                                body.description_images.should.be.eql(["/desc/image1", "/desc/image2"]);
+                                body.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
                                 body.interview.type.should.be.eql(1);
                                 body.interview.location_negotiable.should.be.eql(false);
                                 body.interview.location.should.be.eql("향군타워 5층");
-                                body.interview.open_date.should.be.eql("20171011");
-                                body.interview.close_date.should.be.eql("20171016");
-                                body.interview.date_negotiable.should.be.eql(false);
-                                body.interview.start_date.should.be.eql("20171101");
-                                body.interview.end_date.should.be.eql("20171131");
+                                body.interview.openDate.should.be.eql("20171011");
+                                body.interview.closeDate.should.be.eql("20171016");
+                                body.interview.dateNegotiable.should.be.eql(false);
+                                body.interview.startDate.should.be.eql("20171101");
+                                body.interview.endDate.should.be.eql("20171131");
                                 body.interview.plans.should.be.eql([
                                     {"minute": 10, "plan": "제품 소개"},
                                     {"minute": 30, "plan": "테스트진행"},
