@@ -3,7 +3,7 @@ const config = require('../config');
 
 const sendNotification = (registrationIds) => {
     if(!registrationIds || registrationIds.length <= 0) {
-        return new Error("registrationId가 없습니다.");
+        return;
     }
 
     const key = config.firebase_messaging.serverKey;

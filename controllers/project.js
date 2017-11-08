@@ -1,6 +1,7 @@
 const Projects = require('../models/projects');
 const AppUsagesController = require('../controllers/appUsages');
 const NotificationController = require('../controllers/notification');
+const UserController = require('../controllers/user');
 
 const postProject = (req, res) => {
     const data = req.body;
@@ -15,12 +16,9 @@ const postProject = (req, res) => {
 
     if (data.status === "registered") {
         projectPromise
-            .then(() => AppUsagesController.getUserListByPackageName(data.apps[0]))
-            .then((result) => {
-                if(result.length > 0) {
-                    NotificationController.sendNotification(result);
-                }
-            })
+            .then(AppUsagesController.getUserIdsByPackageNames(data.apps))
+            .then(result => UserController.getRegistrationIds(result))
+            .then(result => NotificationController.sendNotification(result))
             .then(() => res.sendStatus(200))
             .catch((err) => {
                 console.error(err);
