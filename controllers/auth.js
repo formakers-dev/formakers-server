@@ -38,7 +38,7 @@ const loginFail = (req, res) => res.redirect(config.frontendBaseUrl);
 
 const logout = (req, res) => {
     req.logout();
-    res.send(200);
+    res.sendStatus(200);
 };
 
 module.exports = {googleAuth, googleAuthCallback, loginSuccess, loginFail, logout};

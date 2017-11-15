@@ -14,7 +14,7 @@ const UserController = require('./../controllers/user');
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
 
-    const temporaryData = {
+    const oldData = {
         "projectId": config.testProjectId,
         "name": "old-test-project",
         "introduce": "간단소개",
@@ -30,8 +30,7 @@ describe('Project', () => {
         }
     };
 
-    const registeredData = {
-        "projectId": config.testProjectId,
+    const newData = {
         "name": "old-test-project",
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
@@ -55,25 +54,35 @@ describe('Project', () => {
         describe('신규 데이터인 경우 테스트', () => {
             it('신규입력일 경우 projectId를 생성하여 저장한다', done => {
                 request.post('/projects')
-                    .send(temporaryData)
+                    .send(newData)
                     .expect(200)
                     .then(done());
+            });
+
+            it('API 호출 성공시 생성된 projectId를 반환한다', done => {
+                request.post('/projects')
+                    .send(newData)
+                    .expect(200)
+                    .then((res) => {
+                        res.body.projectId.should.exist;
+                        done();
+                    }).catch(err => done(err));
             });
         });
 
         describe('기존 데이터인 경우 테스트', () => {
-            temporaryData.description = '프로젝트 상세 설명 수정';
+            oldData.description = '프로젝트 상세 설명 수정';
 
             beforeEach(done => {
-                Projects.create(temporaryData, () => done());
+                Projects.create(oldData, () => done());
             });
 
             it('기존데이터일 경우 업데이트한다', done => {
                 request.post('/projects')
-                    .send(temporaryData)
+                    .send(oldData)
                     .expect(200)
                     .end(() => {
-                        Projects.find({$and: [{projectId: temporaryData.projectId}]}, (err, res) => {
+                        Projects.find({$and: [{projectId: oldData.projectId}]}, (err, res) => {
                                 const body = res[0];
                                 body.projectId.should.be.eql(config.testProjectId);
                                 body.customerId.should.be.eql(config.testCustomerId);
@@ -92,6 +101,16 @@ describe('Project', () => {
                             });
                     });
             });
+
+            it('API 호출 성공시 등록한 projectId를 반환한다', done => {
+                request.post('/projects')
+                    .send(oldData)
+                    .expect(200)
+                    .then((res) => {
+                        res.body.projectId.should.be.eql(oldData.projectId);
+                        done();
+                    }).catch(err => done(err));
+            });
         });
 
         it('status가 registered인 경우 유사앱유저리스트를 검색해서 알림을 보낸다', (done) => {
@@ -99,14 +118,14 @@ describe('Project', () => {
             const registrationIdList = ['registrationId1', 'registrationId2'];
 
             const stubGetUserListByPackageName = sandbox.stub(AppUsagesController, 'getUserIdsByPackageNames');
-            stubGetUserListByPackageName.withArgs(temporaryData.apps).returns(Promise.resolve(userIdList));
+            stubGetUserListByPackageName.withArgs(oldData.apps).returns(Promise.resolve(userIdList));
             const stubGetRegistrationIds = sandbox.stub(UserController, 'getRegistrationIds');
             stubGetRegistrationIds.withArgs(sinon.match.any).returns(Promise.resolve(registrationIdList));
             const stubSendNotification = sandbox.stub(NotificationController, 'sendNotification');
             stubSendNotification.withArgs(sinon.match.any).returns(Promise.resolve());
 
             request.post('/projects')
-                .send(registeredData)
+                .send(newData)
                 .expect(200)
                 .end(() => {
                     sinon.assert.calledOnce(stubGetUserListByPackageName);
@@ -124,7 +143,7 @@ describe('Project', () => {
         };
 
         beforeEach(done => {
-            Projects.create(temporaryData, () => {
+            Projects.create(oldData, () => {
                 Projects.create(notMyProjectData, () => done());
             });
         });
@@ -143,17 +162,17 @@ describe('Project', () => {
 
         describe('GET /projects', () => {
             it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
-                request.get('/projects/' + temporaryData.projectId)
+                request.get('/projects/' + oldData.projectId)
                     .expect(200)
                     .end((err, res) => {
                         res.body.length.should.be.eql(1);
-                        res.body[0].projectId.should.be.eql(temporaryData.projectId);
+                        res.body[0].projectId.should.be.eql(oldData.projectId);
                         done();
                     });
             });
 
             it('본인의 데이터가 아닌 경우 서버 오류를 리턴한다', done => {
-                request.get('/projects/' + temporaryData.projectId)
+                request.get('/projects/' + oldData.projectId)
                     .expect(500)
                     .end(() => done());
             });
@@ -184,15 +203,15 @@ describe('Project', () => {
         };
 
         beforeEach(done => {
-            Projects.create(temporaryData, () => done());
+            Projects.create(oldData, () => done());
         });
 
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
-            request.post('/projects/'+ temporaryData.projectId +'/interviews')
+            request.post('/projects/'+ oldData.projectId +'/interviews')
                 .send(testInterviewData)
                 .expect(200)
                 .end(() => {
-                    Projects.find({projectId: temporaryData.projectId}, (err, res) => {
+                    Projects.find({projectId: oldData.projectId}, (err, res) => {
                         const body = res[0];
 
                         body.interview.type.should.be.eql("오프라인 테스트");
@@ -215,7 +234,7 @@ describe('Project', () => {
     afterEach(done => {
         sandbox.restore();
 
-        Projects.remove({customerId: temporaryData.customerId})
+        Projects.remove({customerId: oldData.customerId})
             .exec()
             .then(done());
     });

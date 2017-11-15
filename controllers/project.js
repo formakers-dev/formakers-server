@@ -11,24 +11,25 @@ const postProject = (req, res) => {
     if (data.projectId) {
         projectPromise = Projects.findOneAndUpdate({projectId: data.projectId}, {$set: data}, {upsert: true});
     } else {
-        projectPromise = Projects.create(data);
+        projectPromise = Projects.create(data)
+            .then(result => data.projectId = result.projectId);
     }
 
     if (data.status === "registered") {
-        projectPromise
+        projectPromise = projectPromise
             .then(AppUsagesController.getUserIdsByPackageNames(data.apps))
             .then(result => UserController.getRegistrationIds(result))
             .then(result => NotificationController.sendNotification(result))
-            .then(() => res.sendStatus(200))
-            .catch((err) => {
-                console.error(err);
-                res.send(err)
-            });
-    } else {
-        projectPromise
-            .then(() => res.sendStatus(200))
-            .catch((err) => res.send(err));
     }
+
+    projectPromise
+        .then(() => res.json({
+            "projectId": data.projectId
+        }))
+        .catch(err => {
+            console.log(err);
+            res.send(err)
+        })
 };
 
 const getProject = (req, res) => {
