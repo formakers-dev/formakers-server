@@ -12,11 +12,11 @@ describe('App', () => {
         it('키워드로 앱이름을 검색하여 결과를 최대 5개만 리턴한다', done => {
             request.get('/apps?keyword=Kakao')
                 .expect(200)
-                .end((err, res) => {
+                .then(res => {
                     res.body.length.should.be.eql(5);
                     res.body[0].appName.should.be.contains("Kakao");
                     done();
-                });
+                }).catch(err => done(err));
         });
 
         it('키워드가 없으면 사전조건 실패(412)를 리턴한다', done => {

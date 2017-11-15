@@ -16,10 +16,10 @@ describe('Email', () => {
                     isActive: true,
                 })
                 .expect(200)
-                .end((err, res) => {
+                .then(res => {
                     res.body.should.be.eql(true);
                     done();
-                });
+                }).catch(err => done(err));
         });
 
         afterEach((done) => {

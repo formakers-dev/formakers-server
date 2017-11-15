@@ -37,7 +37,13 @@ const getProject = (req, res) => {
 
     if (projectId) {
         Projects.find({$and: [{projectId: projectId}, {customerId: req.user}]}).exec()
-            .then(result => res.json(result))
+            .then(result => {
+                if (result && result.length > 0) {
+                    res.json(result);
+                } else {
+                    res.sendStatus(204);
+                }
+            })
             .catch(err => res.status(500).json({error: err}));
     } else {
         res.sendStatus(500);

@@ -16,6 +16,7 @@ describe('Project', () => {
 
     const oldData = {
         "projectId": config.testProjectId,
+        "customerId": config.testCustomerId,
         "name": "old-test-project",
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
@@ -55,8 +56,7 @@ describe('Project', () => {
             it('신규입력일 경우 projectId를 생성하여 저장한다', done => {
                 request.post('/projects')
                     .send(newData)
-                    .expect(200)
-                    .then(done());
+                    .expect(200, done);
             });
 
             it('API 호출 성공시 생성된 projectId를 반환한다', done => {
@@ -71,21 +71,21 @@ describe('Project', () => {
         });
 
         describe('기존 데이터인 경우 테스트', () => {
-            oldData.description = '프로젝트 상세 설명 수정';
-
             beforeEach(done => {
                 Projects.create(oldData, () => done());
             });
 
             it('기존데이터일 경우 업데이트한다', done => {
+                let updatingData = oldData;
+                updatingData.description = '프로젝트 상세 설명 수정';
+
                 request.post('/projects')
-                    .send(oldData)
+                    .send(updatingData)
                     .expect(200)
-                    .end(() => {
+                    .then(() => {
                         Projects.find({$and: [{projectId: oldData.projectId}]}, (err, res) => {
                                 const body = res[0];
-                                body.projectId.should.be.eql(config.testProjectId);
-                                body.customerId.should.be.eql(config.testCustomerId);
+                                body.customerId.should.be.eql(oldData.customerId);
                                 body.name.should.be.eql('old-test-project');
                                 body.introduce.should.be.eql('간단소개');
                                 body.images.should.be.eql(["/image1", "/image2"]);
@@ -99,7 +99,7 @@ describe('Project', () => {
 
                                 done();
                             });
-                    });
+                    }).catch(err => done(err));
             });
 
             it('API 호출 성공시 등록한 projectId를 반환한다', done => {
@@ -127,24 +127,26 @@ describe('Project', () => {
             request.post('/projects')
                 .send(newData)
                 .expect(200)
-                .end(() => {
+                .then(() => {
                     sinon.assert.calledOnce(stubGetUserListByPackageName);
                     sinon.assert.calledWithExactly(stubSendNotification, registrationIdList);
                     done();
-                });
+                }).catch(err => done(err));
         });
     });
 
     describe('프로젝트 데이터가 등록된 상황에서', () => {
         const notMyProjectData = {
-            "projectId": "someoneProjectId",
+            "projectId": 1234567890,
             "customerId": "someoneId",
             "name": "not-my-project"
         };
 
         beforeEach(done => {
             Projects.create(oldData, () => {
-                Projects.create(notMyProjectData, () => done());
+                Projects.create(notMyProjectData, () => {
+                    done();
+                });
             });
         });
 
@@ -152,11 +154,11 @@ describe('Project', () => {
             it('프로젝트 목록 조회 시 본인의 프로젝트목록만 리턴한다', done => {
                 request.get('/projects')
                     .expect(200)
-                    .end((err, res) => {
+                    .then(res => {
                         expect(res.body.length).to.be.eql(1);
                         expect(res.body[0].customerId).to.be.eql(config.testCustomerId);
                         done();
-                    });
+                    }).catch(err => done(err));
             });
         });
 
@@ -164,24 +166,17 @@ describe('Project', () => {
             it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
                 request.get('/projects/' + oldData.projectId)
                     .expect(200)
-                    .end((err, res) => {
+                    .then(res => {
                         res.body.length.should.be.eql(1);
                         res.body[0].projectId.should.be.eql(oldData.projectId);
                         done();
-                    });
+                    }).catch(err => done(err));
             });
 
-            it('본인의 데이터가 아닌 경우 서버 오류를 리턴한다', done => {
-                request.get('/projects/' + oldData.projectId)
-                    .expect(500)
-                    .end(() => done());
+            it('본인의 데이터가 없는 경우 컨텐츠 없음 코드(204)를 리턴한다', done => {
+                request.get('/projects/' + notMyProjectData.projectId)
+                    .expect(204, done);
             });
-        });
-
-        afterEach(done => {
-            Projects.remove({customerId: notMyProjectData.customerId})
-                .exec()
-                .then(done());
         });
     });
 
@@ -210,7 +205,7 @@ describe('Project', () => {
             request.post('/projects/'+ oldData.projectId +'/interviews')
                 .send(testInterviewData)
                 .expect(200)
-                .end(() => {
+                .then(() => {
                     Projects.find({projectId: oldData.projectId}, (err, res) => {
                         const body = res[0];
 
@@ -227,15 +222,15 @@ describe('Project', () => {
 
                         done();
                     });
-                });
+                }).catch(err => done(err));
         });
     });
 
     afterEach(done => {
         sandbox.restore();
-
-        Projects.remove({customerId: oldData.customerId})
+        Projects.remove({})
             .exec()
-            .then(done());
+            .then(done())
+            .catch(err => done(err));
     });
 });
