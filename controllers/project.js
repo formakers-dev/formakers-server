@@ -32,7 +32,7 @@ const postProject = (req, res) => {
 };
 
 const getProject = (req, res) => {
-    const projectId = req.query.projectId;
+    const projectId = req.params.id;
 
     if (projectId) {
         Projects.find({$and: [{projectId: projectId}, {customerId: req.user}]}).exec()
@@ -49,4 +49,14 @@ const getAllProjects = (req, res) => {
     });
 };
 
-module.exports = {postProject, getProject, getAllProjects};
+const postInterview = (req, res) => {
+    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: {"interview" : req.body}}, {upsert: true})
+        .exec()
+        .then(() => res.json(true))
+        .catch((err) => {
+            console.error(err);
+            res.json(false);
+        });
+};
+
+module.exports = {postProject, getProject, getAllProjects, postInterview};

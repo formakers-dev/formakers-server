@@ -13,12 +13,13 @@ router.get('/auth/login_fail', AuthController.loginFail);
 router.get('/auth/logout', Middleware.auth, AuthController.logout);
 router.get('/auth/check_login', Middleware.auth, (req, res) => res.sendStatus(200));
 
-router.get('/app', Middleware.auth, AppsController.getApps);
+router.get('/apps', Middleware.auth, AppsController.getApps);
 
 router.post('/email', Email.save);
 
-router.post('/project', Middleware.auth, Project.postProject);
-router.get('/project', Middleware.auth, Project.getProject);
+router.post('/projects/:id/interviews', Middleware.auth, Project.postInterview);
+router.post('/projects', Middleware.auth, Project.postProject);
+router.get('/projects/:id', Middleware.auth, Project.getProject);
 router.get('/projects', Middleware.auth, Project.getAllProjects);
 
 router.get('/', (req, res) => {

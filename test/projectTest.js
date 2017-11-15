@@ -22,20 +22,6 @@ describe('Project', () => {
         "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
         "descriptionImages": ["/desc/image1", "/desc/image2"],
-        "interview": {
-            "type": 1,
-            "location_negotiable": false,
-            "location": "향군타워 5층",
-            "openDate": "20171011",
-            "closeDate": "20171016",
-            "dateNegotiable": false,
-            "startDate": "20171101",
-            "endDate": "20171131",
-            "plans": [{"minute": 10, "plan": "제품 소개"}, {"minute": 30, "plan": "테스트진행"}, {
-                "minute": 20,
-                "plan": "피드백"
-            }]
-        },
         "status": "temporary",
         "interviewer": {
             "name": "혜리",
@@ -52,20 +38,6 @@ describe('Project', () => {
         "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
         "descriptionImages": ["/desc/image1", "/desc/image2"],
-        "interview": {
-            "type": 1,
-            "locationNegotiable": false,
-            "location": "향군타워 5층",
-            "openDate": "20171011",
-            "closeDate": "20171016",
-            "dateNegotiable": false,
-            "startDate": "20171101",
-            "endDate": "20171131",
-            "plans": [{"minute": 10, "plan": "제품 소개"}, {"minute": 30, "plan": "테스트진행"}, {
-                "minute": 20,
-                "plan": "피드백"
-            }]
-        },
         "status": "registered",
         "interviewer": {
             "name": "혜리",
@@ -79,10 +51,10 @@ describe('Project', () => {
         server.request.user = config.testCustomerId;
     });
 
-    describe('POST /project', () => {
+    describe('POST /projects', () => {
         describe('신규 데이터인 경우 테스트', () => {
             it('신규입력일 경우 projectId를 생성하여 저장한다', done => {
-                request.post('/project')
+                request.post('/projects')
                     .send(temporaryData)
                     .expect(200)
                     .then(done());
@@ -97,7 +69,7 @@ describe('Project', () => {
             });
 
             it('기존데이터일 경우 업데이트한다', done => {
-                request.post('/project')
+                request.post('/projects')
                     .send(temporaryData)
                     .expect(200)
                     .end(() => {
@@ -111,19 +83,6 @@ describe('Project', () => {
                                 body.apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
                                 body.description.should.be.eql('프로젝트 상세 설명 수정');
                                 body.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
-                                body.interview.type.should.be.eql(1);
-                                body.interview.location_negotiable.should.be.eql(false);
-                                body.interview.location.should.be.eql("향군타워 5층");
-                                body.interview.openDate.should.be.eql("20171011");
-                                body.interview.closeDate.should.be.eql("20171016");
-                                body.interview.dateNegotiable.should.be.eql(false);
-                                body.interview.startDate.should.be.eql("20171101");
-                                body.interview.endDate.should.be.eql("20171131");
-                                body.interview.plans.should.be.eql([
-                                    {"minute": 10, "plan": "제품 소개"},
-                                    {"minute": 30, "plan": "테스트진행"},
-                                    {"minute": 20, "plan": "피드백"}
-                                ]);
                                 body.status.should.be.eql("temporary");
                                 body.interviewer.name.should.be.eql("혜리");
                                 body.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
@@ -146,7 +105,7 @@ describe('Project', () => {
             const stubSendNotification = sandbox.stub(NotificationController, 'sendNotification');
             stubSendNotification.withArgs(sinon.match.any).returns(Promise.resolve());
 
-            request.post('/project')
+            request.post('/projects')
                 .send(registeredData)
                 .expect(200)
                 .end(() => {
@@ -182,9 +141,9 @@ describe('Project', () => {
             });
         });
 
-        describe('GET /project', () => {
+        describe('GET /projects', () => {
             it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
-                request.get('/project?projectId=' + temporaryData.projectId)
+                request.get('/projects/' + temporaryData.projectId)
                     .expect(200)
                     .end((err, res) => {
                         res.body.length.should.be.eql(1);
@@ -194,7 +153,7 @@ describe('Project', () => {
             });
 
             it('본인의 데이터가 아닌 경우 서버 오류를 리턴한다', done => {
-                request.get('/project?projectId=' + temporaryData.projectId)
+                request.get('/projects/' + temporaryData.projectId)
                     .expect(500)
                     .end(() => done());
             });
@@ -204,6 +163,52 @@ describe('Project', () => {
             Projects.remove({customerId: notMyProjectData.customerId})
                 .exec()
                 .then(done());
+        });
+    });
+
+    describe('POST /projects/{id}/interviews', () => {
+        const testInterviewData = {
+            "type": '오프라인 테스트',
+            "location": '향군타워 5층',
+            "openDate": '20171101',
+            "closeDate": '20171102',
+            "startDate": '20171103',
+            "endDate": '20171104',
+            "plans": [{
+                "minute": 10,
+                "plan": '제품소개',
+            }, {
+                "minute": 30,
+                "plan": '인터뷰',
+            }],
+        };
+
+        beforeEach(done => {
+            Projects.create(temporaryData, () => done());
+        });
+
+        it('프로젝트의 인터뷰 정보를 저장한다', done => {
+            request.post('/projects/'+ temporaryData.projectId +'/interviews')
+                .send(testInterviewData)
+                .expect(200)
+                .end(() => {
+                    Projects.find({projectId: temporaryData.projectId}, (err, res) => {
+                        const body = res[0];
+
+                        body.interview.type.should.be.eql("오프라인 테스트");
+                        body.interview.location.should.be.eql("향군타워 5층");
+                        body.interview.openDate.should.be.eql("20171101");
+                        body.interview.closeDate.should.be.eql("20171102");
+                        body.interview.startDate.should.be.eql("20171103");
+                        body.interview.endDate.should.be.eql("20171104");
+                        body.interview.plans.should.be.eql([
+                            {"minute": 10, "plan": "제품소개"},
+                            {"minute": 30, "plan": "인터뷰"}
+                        ]);
+
+                        done();
+                    });
+                });
         });
     });
 
