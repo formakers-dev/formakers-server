@@ -8,14 +8,13 @@ const projectSchema = new Schema({
     name: String,
     introduce: String,
     images: Array,
-    apps: Array,
     description: String,
     descriptionImages: Array,
-    interview: Object,
+    interviews: Array,
     status: String,
     interviewer: Object
 });
 
-projectSchema.plugin(autoIncrement.plugin, { model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1 });
+projectSchema.plugin(autoIncrement.plugin, {model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1});
 
 module.exports = mongoose.model('projects', projectSchema);

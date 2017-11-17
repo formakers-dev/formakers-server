@@ -13,6 +13,7 @@ const UserController = require('./../controllers/user');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
+    let clock;
 
     const oldData = {
         "projectId": config.testProjectId,
@@ -20,7 +21,6 @@ describe('Project', () => {
         "name": "old-test-project",
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
-        "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
         "descriptionImages": ["/desc/image1", "/desc/image2"],
         "status": "temporary",
@@ -35,7 +35,6 @@ describe('Project', () => {
         "name": "old-test-project",
         "introduce": "간단소개",
         "images": ["/image1", "/image2"],
-        "apps": ["com.kakao.talk", "com.nhn.android.search"],
         "description": "프로젝트 상세 설명",
         "descriptionImages": ["/desc/image1", "/desc/image2"],
         "status": "registered",
@@ -84,21 +83,20 @@ describe('Project', () => {
                     .expect(200)
                     .then(() => {
                         Projects.find({$and: [{projectId: oldData.projectId}]}, (err, res) => {
-                                const body = res[0];
-                                body.customerId.should.be.eql(oldData.customerId);
-                                body.name.should.be.eql('old-test-project');
-                                body.introduce.should.be.eql('간단소개');
-                                body.images.should.be.eql(["/image1", "/image2"]);
-                                body.apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
-                                body.description.should.be.eql('프로젝트 상세 설명 수정');
-                                body.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
-                                body.status.should.be.eql("temporary");
-                                body.interviewer.name.should.be.eql("혜리");
-                                body.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
-                                body.interviewer.introduce.should.be.eql("툰스토리 디자이너");
+                            const body = res[0];
+                            body.customerId.should.be.eql(oldData.customerId);
+                            body.name.should.be.eql('old-test-project');
+                            body.introduce.should.be.eql('간단소개');
+                            body.images.should.be.eql(["/image1", "/image2"]);
+                            body.description.should.be.eql('프로젝트 상세 설명 수정');
+                            body.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
+                            body.status.should.be.eql("temporary");
+                            body.interviewer.name.should.be.eql("혜리");
+                            body.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
+                            body.interviewer.introduce.should.be.eql("툰스토리 디자이너");
 
-                                done();
-                            });
+                            done();
+                        });
                     }).catch(err => done(err));
             });
 
@@ -184,6 +182,7 @@ describe('Project', () => {
         const testInterviewData = {
             "type": '오프라인 테스트',
             "location": '향군타워 5층',
+            "apps": ["com.kakao.talk", "com.nhn.android.search"],
             "openDate": '20171101',
             "closeDate": '20171102',
             "startDate": '20171103',
@@ -198,24 +197,30 @@ describe('Project', () => {
         };
 
         beforeEach(done => {
-            Projects.create(oldData, () => done());
+            Projects.create(oldData, () => {
+                clock = sinon.useFakeTimers(new Date("2017-11-17").getTime());
+                done()
+            });
+
         });
 
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
-            request.post('/projects/'+ oldData.projectId +'/interviews')
+            request.post('/projects/' + oldData.projectId + '/interviews')
                 .send(testInterviewData)
                 .expect(200)
                 .then(() => {
                     Projects.find({projectId: oldData.projectId}, (err, res) => {
                         const body = res[0];
-
-                        body.interview.type.should.be.eql("오프라인 테스트");
-                        body.interview.location.should.be.eql("향군타워 5층");
-                        body.interview.openDate.should.be.eql("20171101");
-                        body.interview.closeDate.should.be.eql("20171102");
-                        body.interview.startDate.should.be.eql("20171103");
-                        body.interview.endDate.should.be.eql("20171104");
-                        body.interview.plans.should.be.eql([
+                        body.interviews.length.should.be.eql(1);
+                        body.interviews[0].seq.should.be.eql(1510876800000);
+                        body.interviews[0].type.should.be.eql("오프라인 테스트");
+                        body.interviews[0].location.should.be.eql("향군타워 5층");
+                        body.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
+                        body.interviews[0].openDate.should.be.eql("20171101");
+                        body.interviews[0].closeDate.should.be.eql("20171102");
+                        body.interviews[0].startDate.should.be.eql("20171103");
+                        body.interviews[0].endDate.should.be.eql("20171104");
+                        body.interviews[0].plans.should.be.eql([
                             {"minute": 10, "plan": "제품소개"},
                             {"minute": 30, "plan": "인터뷰"}
                         ]);
@@ -223,6 +228,11 @@ describe('Project', () => {
                         done();
                     });
                 }).catch(err => done(err));
+        });
+
+        afterEach(done => {
+            clock.restore();
+            done();
         });
     });
 

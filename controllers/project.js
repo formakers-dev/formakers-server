@@ -57,7 +57,8 @@ const getAllProjects = (req, res) => {
 };
 
 const postInterview = (req, res) => {
-    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: {"interview" : req.body}}, {upsert: true})
+    req.body.seq = new Date().getTime();
+    Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": req.body}}, {upsert: true})
         .exec()
         .then(() => res.json(true))
         .catch((err) => {
