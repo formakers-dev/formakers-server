@@ -183,10 +183,10 @@ describe('Project', () => {
             "type": '오프라인 테스트',
             "location": '향군타워 5층',
             "apps": ["com.kakao.talk", "com.nhn.android.search"],
-            "openDate": '20171101',
-            "closeDate": '20171102',
-            "startDate": '20171103',
-            "endDate": '20171104',
+            "openDate": '2017-11-01T00:00:00.000Z',
+            "closeDate": '2017-11-02T00:00:00.000Z',
+            "startDate": '2017-11-03T00:00:00.000Z',
+            "endDate": '2017-11-04T00:00:00.000Z',
             "plans": [{
                 "minute": 10,
                 "plan": '제품소개',
@@ -216,10 +216,10 @@ describe('Project', () => {
                         body.interviews[0].type.should.be.eql("오프라인 테스트");
                         body.interviews[0].location.should.be.eql("향군타워 5층");
                         body.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
-                        body.interviews[0].openDate.should.be.eql("20171101");
-                        body.interviews[0].closeDate.should.be.eql("20171102");
-                        body.interviews[0].startDate.should.be.eql("20171103");
-                        body.interviews[0].endDate.should.be.eql("20171104");
+                        body.interviews[0].openDate.should.be.eql(new Date("2017-11-01T00:00:00.000Z"));
+                        body.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T00:00:00.000Z"));
+                        body.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
+                        body.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
                         body.interviews[0].plans.should.be.eql([
                             {"minute": 10, "plan": "제품소개"},
                             {"minute": 30, "plan": "인터뷰"}
