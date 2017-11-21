@@ -177,7 +177,6 @@ describe('Project', () => {
                 clock = sinon.useFakeTimers(new Date("2017-11-17").getTime());
                 done()
             });
-
         });
 
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
@@ -193,7 +192,7 @@ describe('Project', () => {
                         body.interviews[0].location.should.be.eql("향군타워 5층");
                         body.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
                         body.interviews[0].openDate.should.be.eql(new Date("2017-11-01T00:00:00.000Z"));
-                        body.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T00:00:00.000Z"));
+                        body.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T23:59:59.999Z"));
                         body.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
                         body.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
                         body.interviews[0].totalCount.should.be.eql(5);

@@ -52,7 +52,10 @@ const postInterview = (req, res) => {
     req.body.startDate = new Date(req.body.startDate);
     req.body.endDate = new Date(req.body.endDate);
     req.body.openDate = new Date(req.body.openDate);
-    req.body.closeDate = new Date(req.body.closeDate);
+
+    const closeDate = new Date(req.body.closeDate);
+    closeDate.setUTCHours(23, 59, 59, 999);
+    req.body.closeDate = closeDate;
 
     req.body.totalCount = 5;
 
