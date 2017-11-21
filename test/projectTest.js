@@ -4,12 +4,8 @@ const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
 const should = chai.should();
-const expect = chai.expect;
 
 const Projects = require('./../models/projects');
-const AppUsagesController = require('./../controllers/appUsages');
-const NotificationController = require('./../controllers/notification');
-const UserController = require('./../controllers/user');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
@@ -63,7 +59,8 @@ describe('Project', () => {
                     .send(newData)
                     .expect(200)
                     .then((res) => {
-                        res.body.projectId.should.exist;
+                        res.body.should.haveOwnProperty('projectId');
+                        res.body.projectId.should.not.be.undefined;
                         done();
                     }).catch(err => done(err));
             });
@@ -110,27 +107,6 @@ describe('Project', () => {
                     }).catch(err => done(err));
             });
         });
-
-        it('status가 registered인 경우 유사앱유저리스트를 검색해서 알림을 보낸다', (done) => {
-            const userIdList = ['testUserId1', 'testUserId2'];
-            const registrationIdList = ['registrationId1', 'registrationId2'];
-
-            const stubGetUserListByPackageName = sandbox.stub(AppUsagesController, 'getUserIdsByPackageNames');
-            stubGetUserListByPackageName.withArgs(oldData.apps).returns(Promise.resolve(userIdList));
-            const stubGetRegistrationIds = sandbox.stub(UserController, 'getRegistrationIds');
-            stubGetRegistrationIds.withArgs(sinon.match.any).returns(Promise.resolve(registrationIdList));
-            const stubSendNotification = sandbox.stub(NotificationController, 'sendNotification');
-            stubSendNotification.withArgs(sinon.match.any).returns(Promise.resolve());
-
-            request.post('/projects')
-                .send(newData)
-                .expect(200)
-                .then(() => {
-                    sinon.assert.calledOnce(stubGetUserListByPackageName);
-                    sinon.assert.calledWithExactly(stubSendNotification, registrationIdList);
-                    done();
-                }).catch(err => done(err));
-        });
     });
 
     describe('프로젝트 데이터가 등록된 상황에서', () => {
@@ -153,8 +129,8 @@ describe('Project', () => {
                 request.get('/projects')
                     .expect(200)
                     .then(res => {
-                        expect(res.body.length).to.be.eql(1);
-                        expect(res.body[0].customerId).to.be.eql(config.testCustomerId);
+                        res.body.length.should.be.eql(1);
+                        res.body[0].customerId.should.be.eql(config.testCustomerId);
                         done();
                     }).catch(err => done(err));
             });
