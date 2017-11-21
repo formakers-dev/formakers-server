@@ -48,11 +48,13 @@ const getAllProjects = (req, res) => {
 
 const postInterview = (req, res) => {
     req.body.seq = new Date().getTime();
-    console.log(req.body.startDate);
+
     req.body.startDate = new Date(req.body.startDate);
     req.body.endDate = new Date(req.body.endDate);
     req.body.openDate = new Date(req.body.openDate);
     req.body.closeDate = new Date(req.body.closeDate);
+
+    req.body.totalCount = 5;
 
     Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": req.body}}, {upsert: true})
         .exec()

@@ -196,6 +196,7 @@ describe('Project', () => {
                         body.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T00:00:00.000Z"));
                         body.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
                         body.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
+                        body.interviews[0].totalCount.should.be.eql(5);
                         body.interviews[0].plans.should.be.eql([
                             {"minute": 10, "plan": "제품소개"},
                             {"minute": 30, "plan": "인터뷰"}
