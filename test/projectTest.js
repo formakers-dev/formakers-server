@@ -9,7 +9,6 @@ const Projects = require('./../models/projects');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
-    let clock;
 
     const notMyData = {
         "projectId": 1234567890,
@@ -158,23 +157,22 @@ describe('Project', () => {
             }],
         };
 
-        beforeEach(() => {
-            clock = sinon.useFakeTimers(new Date("2017-11-17").getTime());
-        });
-
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
             request.post('/projects/' + myData.projectId + '/interviews')
                 .send(testInterviewData)
                 .expect(200)
-                .then(() => Projects.findOne({projectId: myData.projectId}).exec())
+                .then(res => {
+                    res.body.interviewSeq.should.be.eql(1);
+                    return Projects.findOne({projectId: myData.projectId}).exec();
+                })
                 .then(project => {
                     project.interviews.length.should.be.eql(1);
-                    project.interviews[0].seq.should.be.eql(1510876800000);
+                    project.interviews[0].seq.should.be.eql(1);
                     project.interviews[0].type.should.be.eql("오프라인 테스트");
                     project.interviews[0].location.should.be.eql("향군타워 5층");
                     project.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
                     project.interviews[0].openDate.should.be.eql(new Date("2017-11-01T00:00:00.000Z"));
-                    project.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T23:59:59.999Z"));
+                    project.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T00:00:00.000Z"));
                     project.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
                     project.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
                     project.interviews[0].totalCount.should.be.eql(5);
@@ -188,14 +186,35 @@ describe('Project', () => {
                 .catch(err => done(err));
         });
 
+        describe('기존 인터뷰 정보가 존재하는 상황에서', () => {
+            beforeEach(done => {
+                request.post('/projects/' + myData.projectId + '/interviews')
+                    .send(testInterviewData)
+                    .expect(200, done);
+            });
+
+            it('인터뷰 순번이 1만큼 증가되어 정보를 저장한다', done => {
+                request.post('/projects/' + myData.projectId + '/interviews')
+                    .send(testInterviewData)
+                    .expect(200)
+                    .then(res => {
+                        res.body.interviewSeq.should.be.eql(2);
+                        return Projects.findOne({projectId: myData.projectId}).exec();
+                    })
+                    .then(project => {
+                        project.interviews.length.should.be.eql(2);
+                        project.interviews[0].seq.should.be.eql(1);
+                        project.interviews[1].seq.should.be.eql(2);
+                        done();
+                    })
+                    .catch(err => done(err));
+            });
+        });
+
         it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
             request.post('/projects/' + notMyData.projectId + '/interviews')
                 .send({})
                 .expect(401, done);
-        });
-
-        afterEach(() => {
-            clock.restore();
         });
     });
 

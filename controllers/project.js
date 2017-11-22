@@ -1,16 +1,16 @@
 const Projects = require('../models/projects');
 
 const registerProject = (req, res) => {
-    const data = req.body;
-    data.customerId = req.user;
+    const newProject = req.body;
+    newProject.customerId = req.user;
 
-    Projects.create(data)
+    Projects.create(newProject)
         .then(result => res.json({
             "projectId": result.projectId
         }))
         .catch(err => {
             console.log(err);
-            res.send(err)
+            res.status(500).json({error: err});
         });
 };
 
@@ -24,7 +24,7 @@ const updateProject = (req, res) => {
         }))
         .catch(err => {
             console.log(err);
-            res.send(err)
+            res.status(500).json({error: err});
         });
 };
 
@@ -47,24 +47,25 @@ const getAllProjects = (req, res) => {
 };
 
 const registerInterview = (req, res) => {
-    req.body.seq = new Date().getTime();
+    const newInterview = req.body;
 
-    req.body.startDate = new Date(req.body.startDate);
-    req.body.endDate = new Date(req.body.endDate);
-    req.body.openDate = new Date(req.body.openDate);
+    Projects.findOne({projectId: req.params.id}).select('interviews').exec()
+        .then(project => {
+            newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
+            newInterview.startDate = new Date(req.body.startDate);
+            newInterview.endDate = new Date(req.body.endDate);
+            newInterview.openDate = new Date(req.body.openDate);
+            newInterview.closeDate = new Date(req.body.closeDate);
+            newInterview.totalCount = 5;
 
-    const closeDate = new Date(req.body.closeDate);
-    closeDate.setUTCHours(23, 59, 59, 999);
-    req.body.closeDate = closeDate;
-
-    req.body.totalCount = 5;
-
-    Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": req.body}}, {upsert: true})
-        .exec()
-        .then(() => res.json(true))
+            return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
+        })
+        .then(() => res.json({
+            "interviewSeq": newInterview.seq
+        }))
         .catch((err) => {
             console.error(err);
-            res.json(false);
+            res.status(500).json({error: err});
         });
 };
 
