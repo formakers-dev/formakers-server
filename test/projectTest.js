@@ -77,12 +77,12 @@ describe('Project', () => {
         });
     });
 
-    describe('POST /projects/{id}', () => {
+    describe('PUT /projects/{id}', () => {
         it('기존데이터를 업데이트한다', done => {
             let updatingData = myData;
             updatingData.description = '프로젝트 상세 설명 수정';
 
-            request.post('/projects/' + myData.projectId)
+            request.put('/projects/' + myData.projectId)
                 .send(updatingData)
                 .expect(200)
                 .then(res => {
@@ -106,7 +106,7 @@ describe('Project', () => {
         });
 
         it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
-            request.post('/projects/' + notMyData.projectId)
+            request.put('/projects/' + notMyData.projectId)
                 .send({})
                 .expect(401, done);
         });
@@ -166,27 +166,26 @@ describe('Project', () => {
             request.post('/projects/' + myData.projectId + '/interviews')
                 .send(testInterviewData)
                 .expect(200)
-                .then(() => {
-                    Projects.find({projectId: myData.projectId}, (err, res) => {
-                        const body = res[0];
-                        body.interviews.length.should.be.eql(1);
-                        body.interviews[0].seq.should.be.eql(1510876800000);
-                        body.interviews[0].type.should.be.eql("오프라인 테스트");
-                        body.interviews[0].location.should.be.eql("향군타워 5층");
-                        body.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
-                        body.interviews[0].openDate.should.be.eql(new Date("2017-11-01T00:00:00.000Z"));
-                        body.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T23:59:59.999Z"));
-                        body.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
-                        body.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
-                        body.interviews[0].totalCount.should.be.eql(5);
-                        body.interviews[0].plans.should.be.eql([
-                            {"minute": 10, "plan": "제품소개"},
-                            {"minute": 30, "plan": "인터뷰"}
-                        ]);
+                .then(() => Projects.findOne({projectId: myData.projectId}).exec())
+                .then(project => {
+                    project.interviews.length.should.be.eql(1);
+                    project.interviews[0].seq.should.be.eql(1510876800000);
+                    project.interviews[0].type.should.be.eql("오프라인 테스트");
+                    project.interviews[0].location.should.be.eql("향군타워 5층");
+                    project.interviews[0].apps.should.be.eql(["com.kakao.talk", "com.nhn.android.search"]);
+                    project.interviews[0].openDate.should.be.eql(new Date("2017-11-01T00:00:00.000Z"));
+                    project.interviews[0].closeDate.should.be.eql(new Date("2017-11-02T23:59:59.999Z"));
+                    project.interviews[0].startDate.should.be.eql(new Date("2017-11-03T00:00:00.000Z"));
+                    project.interviews[0].endDate.should.be.eql(new Date("2017-11-04T00:00:00.000Z"));
+                    project.interviews[0].totalCount.should.be.eql(5);
+                    project.interviews[0].plans.should.be.eql([
+                        {"minute": 10, "plan": "제품소개"},
+                        {"minute": 30, "plan": "인터뷰"}
+                    ]);
 
-                        done();
-                    });
-                }).catch(err => done(err));
+                    done();
+                })
+                .catch(err => done(err));
         });
 
         it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {

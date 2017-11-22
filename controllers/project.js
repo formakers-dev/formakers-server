@@ -46,7 +46,7 @@ const getAllProjects = (req, res) => {
         .catch(err => res.status(500).json({error: err}));
 };
 
-const postInterview = (req, res) => {
+const registerInterview = (req, res) => {
     req.body.seq = new Date().getTime();
 
     req.body.startDate = new Date(req.body.startDate);
@@ -68,4 +68,4 @@ const postInterview = (req, res) => {
         });
 };
 
-module.exports = {registerProject, updateProject, getProject, getAllProjects, postInterview};
+module.exports = {registerProject, updateProject, getProject, getAllProjects, registerInterview};

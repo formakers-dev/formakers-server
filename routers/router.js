@@ -19,9 +19,9 @@ router.post('/email', Email.save);
 
 router.get('/projects', Middleware.auth, Project.getAllProjects);
 router.post('/projects', Middleware.auth, Project.registerProject);
-router.post('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.updateProject);
+router.put('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.updateProject);
 router.get('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.getProject);
-router.post('/projects/:id/interviews', Middleware.auth, Middleware.projectAccessAuth, Project.postInterview);
+router.post('/projects/:id/interviews', Middleware.auth, Middleware.projectAccessAuth, Project.registerInterview);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
