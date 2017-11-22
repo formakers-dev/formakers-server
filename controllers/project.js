@@ -1,25 +1,31 @@
 const Projects = require('../models/projects');
 
-const postProject = (req, res) => {
+const registerProject = (req, res) => {
     const data = req.body;
     data.customerId = req.user;
 
-    let projectPromise;
-    if (data.projectId) {
-        projectPromise = Projects.findOneAndUpdate({projectId: data.projectId}, {$set: data}, {upsert: true});
-    } else {
-        projectPromise = Projects.create(data)
-            .then(result => data.projectId = result.projectId);
-    }
-
-    projectPromise
-        .then(() => res.json({
-            "projectId": data.projectId
+    Projects.create(data)
+        .then(result => res.json({
+            "projectId": result.projectId
         }))
         .catch(err => {
             console.log(err);
             res.send(err)
-        })
+        });
+};
+
+const updateProject = (req, res) => {
+    const data = req.body;
+    data.customerId = req.user;
+
+    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data}, {upsert: true})
+        .then(project => res.json({
+            "projectId": project.projectId
+        }))
+        .catch(err => {
+            console.log(err);
+            res.send(err)
+        });
 };
 
 const getProject = (req, res) => {
@@ -68,4 +74,4 @@ const postInterview = (req, res) => {
         });
 };
 
-module.exports = {postProject, getProject, getAllProjects, postInterview};
+module.exports = {registerProject, updateProject, getProject, getAllProjects, postInterview};

@@ -11,7 +11,13 @@ describe('Project', () => {
     const sandbox = sinon.sandbox.create();
     let clock;
 
-    const oldData = {
+    const notMyData = {
+        "projectId": 1234567890,
+        "customerId": "someoneId",
+        "name": "not-my-project"
+    };
+
+    const myData = {
         "projectId": config.testProjectId,
         "customerId": config.testCustomerId,
         "name": "old-test-project",
@@ -27,130 +33,105 @@ describe('Project', () => {
         }
     };
 
-    const newData = {
-        "name": "old-test-project",
-        "introduce": "간단소개",
-        "images": ["/image1", "/image2"],
-        "description": "프로젝트 상세 설명",
-        "descriptionImages": ["/desc/image1", "/desc/image2"],
-        "status": "registered",
-        "interviewer": {
-            "name": "혜리",
-            "url": "https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a",
-            "introduce": "툰스토리 디자이너"
-        }
-    };
-
-    beforeEach(() => {
+    beforeEach((done) => {
         server.request.isAuthenticated = () => true;
         server.request.user = config.testCustomerId;
+
+        Projects.create([myData, notMyData], () => done());
     });
 
     describe('POST /projects', () => {
-        describe('신규 데이터인 경우 테스트', () => {
-            it('신규입력일 경우 projectId를 생성하여 저장한다', done => {
-                request.post('/projects')
-                    .send(newData)
-                    .expect(200, done);
-            });
+        const newData = {
+            "name": "new-test-project",
+            "introduce": "new간단소개",
+            "images": ["/newimage1"],
+            "description": "new프로젝트 상세 설명",
+            "descriptionImages": ["/desc/newimage1", "/desc/newimage2", "/desc/newimage3"],
+            "status": "temporary",
+            "interviewer": {
+                "name": "new혜리",
+                "url": "https://newUrl",
+                "introduce": "new디자이너"
+            }
+        };
 
-            it('API 호출 성공시 생성된 projectId를 반환한다', done => {
-                request.post('/projects')
-                    .send(newData)
-                    .expect(200)
-                    .then((res) => {
-                        res.body.should.haveOwnProperty('projectId');
-                        res.body.projectId.should.not.be.undefined;
-                        done();
-                    }).catch(err => done(err));
-            });
-        });
+        it('projectId를 생성하고 신규 projectId를 반환한다', done => {
+            request.post('/projects')
+                .send(newData)
+                .expect(200)
+                .then((res) => Projects.findOne({projectId: res.body.projectId}).exec())
+                .then(project => {
+                    project.name.should.be.eql('new-test-project');
+                    project.introduce.should.be.eql('new간단소개');
+                    project.images.should.be.eql(["/newimage1"]);
+                    project.description.should.be.eql('new프로젝트 상세 설명');
+                    project.descriptionImages.should.be.eql(["/desc/newimage1", "/desc/newimage2", "/desc/newimage3"]);
+                    project.status.should.be.eql("temporary");
+                    project.interviewer.name.should.be.eql("new혜리");
+                    project.interviewer.url.should.be.eql("https://newUrl");
+                    project.interviewer.introduce.should.be.eql("new디자이너");
 
-        describe('기존 데이터인 경우 테스트', () => {
-            beforeEach(done => {
-                Projects.create(oldData, () => done());
-            });
-
-            it('기존데이터일 경우 업데이트한다', done => {
-                let updatingData = oldData;
-                updatingData.description = '프로젝트 상세 설명 수정';
-
-                request.post('/projects')
-                    .send(updatingData)
-                    .expect(200)
-                    .then(() => {
-                        Projects.find({$and: [{projectId: oldData.projectId}]}, (err, res) => {
-                            const body = res[0];
-                            body.customerId.should.be.eql(oldData.customerId);
-                            body.name.should.be.eql('old-test-project');
-                            body.introduce.should.be.eql('간단소개');
-                            body.images.should.be.eql(["/image1", "/image2"]);
-                            body.description.should.be.eql('프로젝트 상세 설명 수정');
-                            body.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
-                            body.status.should.be.eql("temporary");
-                            body.interviewer.name.should.be.eql("혜리");
-                            body.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
-                            body.interviewer.introduce.should.be.eql("툰스토리 디자이너");
-
-                            done();
-                        });
-                    }).catch(err => done(err));
-            });
-
-            it('API 호출 성공시 등록한 projectId를 반환한다', done => {
-                request.post('/projects')
-                    .send(oldData)
-                    .expect(200)
-                    .then((res) => {
-                        res.body.projectId.should.be.eql(oldData.projectId);
-                        done();
-                    }).catch(err => done(err));
-            });
+                    done();
+                })
+                .catch(err => done(err));
         });
     });
 
-    describe('프로젝트 데이터가 등록된 상황에서', () => {
-        const notMyProjectData = {
-            "projectId": 1234567890,
-            "customerId": "someoneId",
-            "name": "not-my-project"
-        };
+    describe('POST /projects/{id}', () => {
+        it('기존데이터를 업데이트한다', done => {
+            let updatingData = myData;
+            updatingData.description = '프로젝트 상세 설명 수정';
 
-        beforeEach(done => {
-            Projects.create(oldData, () => {
-                Projects.create(notMyProjectData, () => {
+            request.post('/projects/' + myData.projectId)
+                .send(updatingData)
+                .expect(200)
+                .then(res => {
+                    res.body.projectId.should.be.eql(myData.projectId);
+
+                    Projects.findOne({projectId: myData.projectId}, (err, project) => {
+                        project.customerId.should.be.eql(myData.customerId);
+                        project.name.should.be.eql('old-test-project');
+                        project.introduce.should.be.eql('간단소개');
+                        project.images.should.be.eql(["/image1", "/image2"]);
+                        project.description.should.be.eql('프로젝트 상세 설명 수정');
+                        project.descriptionImages.should.be.eql(["/desc/image1", "/desc/image2"]);
+                        project.status.should.be.eql("temporary");
+                        project.interviewer.name.should.be.eql("혜리");
+                        project.interviewer.url.should.be.eql("https://firebasestorage.googleapis.com/v0/b/dragonserver-627cc.appspot.com/o/images%2F2dee1c60-bebf-11e7-9289-fd750bff2e2c?alt=media&token=009bbab5-0655-4038-ab20-8a3a05e29f4a");
+                        project.interviewer.introduce.should.be.eql("툰스토리 디자이너");
+
+                        done();
+                    });
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /projects', () => {
+        it('본인의 프로젝트 목록를 리턴한다', done => {
+            request.get('/projects')
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(1);
+                    res.body[0].customerId.should.be.eql(config.testCustomerId);
                     done();
-                });
-            });
+                }).catch(err => done(err));
+        });
+    });
+
+    describe('GET /projects/{id}', () => {
+        it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
+            request.get('/projects/' + myData.projectId)
+                .expect(200)
+                .then(res => {
+                    res.body.length.should.be.eql(1);
+                    res.body[0].projectId.should.be.eql(myData.projectId);
+                    done();
+                }).catch(err => done(err));
         });
 
-        describe('GET /projects', () => {
-            it('프로젝트 목록 조회 시 본인의 프로젝트목록만 리턴한다', done => {
-                request.get('/projects')
-                    .expect(200)
-                    .then(res => {
-                        res.body.length.should.be.eql(1);
-                        res.body[0].customerId.should.be.eql(config.testCustomerId);
-                        done();
-                    }).catch(err => done(err));
-            });
-        });
-
-        describe('GET /projects', () => {
-            it('본인의 데이터인 경우 프로젝트 정보를 리턴한다', done => {
-                request.get('/projects/' + oldData.projectId)
-                    .expect(200)
-                    .then(res => {
-                        res.body.length.should.be.eql(1);
-                        res.body[0].projectId.should.be.eql(oldData.projectId);
-                        done();
-                    }).catch(err => done(err));
-            });
-
-            it('본인의 데이터가 없는 경우 컨텐츠 없음 코드(204)를 리턴한다', done => {
-                request.get('/projects/' + notMyProjectData.projectId)
-                    .expect(204, done);
-            });
+        it('본인의 데이터가 없는 경우 컨텐츠 없음 코드(204)를 리턴한다', done => {
+            request.get('/projects/' + notMyData.projectId)
+                .expect(204, done);
         });
     });
 
@@ -172,19 +153,16 @@ describe('Project', () => {
             }],
         };
 
-        beforeEach(done => {
-            Projects.create(oldData, () => {
-                clock = sinon.useFakeTimers(new Date("2017-11-17").getTime());
-                done()
-            });
+        beforeEach(() => {
+            clock = sinon.useFakeTimers(new Date("2017-11-17").getTime());
         });
 
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
-            request.post('/projects/' + oldData.projectId + '/interviews')
+            request.post('/projects/' + myData.projectId + '/interviews')
                 .send(testInterviewData)
                 .expect(200)
                 .then(() => {
-                    Projects.find({projectId: oldData.projectId}, (err, res) => {
+                    Projects.find({projectId: myData.projectId}, (err, res) => {
                         const body = res[0];
                         body.interviews.length.should.be.eql(1);
                         body.interviews[0].seq.should.be.eql(1510876800000);
@@ -206,17 +184,13 @@ describe('Project', () => {
                 }).catch(err => done(err));
         });
 
-        afterEach(done => {
+        afterEach(() => {
             clock.restore();
-            done();
         });
     });
 
     afterEach(done => {
         sandbox.restore();
-        Projects.remove({})
-            .exec()
-            .then(done())
-            .catch(err => done(err));
+        Projects.remove({}, () => done());
     });
 });
