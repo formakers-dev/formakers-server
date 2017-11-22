@@ -182,9 +182,9 @@ describe('Project', () => {
                         {minute: 30, plan: '인터뷰'}
                     ]);
                     interview.timeSlots.should.be.eql([
-                        {time: 6},
-                        {time: 7},
-                        {time: 13}
+                        {id:10600, time: 6},
+                        {id:10700, time: 7},
+                        {id:11300, time: 13}
                     ]);
 
                     done();
