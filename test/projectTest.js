@@ -104,6 +104,12 @@ describe('Project', () => {
                     });
                 }).catch(err => done(err));
         });
+
+        it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
+            request.post('/projects/' + notMyData.projectId)
+                .send({})
+                .expect(401, done);
+        });
     });
 
     describe('GET /projects', () => {
@@ -129,9 +135,8 @@ describe('Project', () => {
                 }).catch(err => done(err));
         });
 
-        it('본인의 데이터가 없는 경우 컨텐츠 없음 코드(204)를 리턴한다', done => {
-            request.get('/projects/' + notMyData.projectId)
-                .expect(204, done);
+        it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
+            request.get('/projects/' + notMyData.projectId).expect(401, done);
         });
     });
 
@@ -182,6 +187,12 @@ describe('Project', () => {
                         done();
                     });
                 }).catch(err => done(err));
+        });
+
+        it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
+            request.post('/projects/' + notMyData.projectId + '/interviews')
+                .send({})
+                .expect(401, done);
         });
 
         afterEach(() => {

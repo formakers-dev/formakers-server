@@ -32,14 +32,8 @@ const getProject = (req, res) => {
     const projectId = req.params.id;
 
     if (projectId) {
-        Projects.find({$and: [{projectId: projectId}, {customerId: req.user}]}).exec()
-            .then(result => {
-                if (result && result.length > 0) {
-                    res.json(result);
-                } else {
-                    res.sendStatus(204);
-                }
-            })
+        Projects.find({projectId: projectId}).exec()
+            .then(result => res.json(result))
             .catch(err => res.status(500).json({error: err}));
     } else {
         res.sendStatus(500);
@@ -47,9 +41,9 @@ const getProject = (req, res) => {
 };
 
 const getAllProjects = (req, res) => {
-    Projects.find({customerId: req.user}, (err, result) => {
-        (err) ? res.status(500).json({error: err}) : res.json(result);
-    });
+    Projects.find({customerId: req.user}).exec()
+        .then(result => res.json(result))
+        .catch(err => res.status(500).json({error: err}));
 };
 
 const postInterview = (req, res) => {

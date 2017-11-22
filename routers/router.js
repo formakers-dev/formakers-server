@@ -17,11 +17,11 @@ router.get('/apps', Middleware.auth, AppsController.getApps);
 
 router.post('/email', Email.save);
 
-router.post('/projects/:id/interviews', Middleware.auth, Project.postInterview);
-router.post('/projects', Middleware.auth, Project.registerProject);
-router.post('/projects/:id', Middleware.auth, Project.updateProject);
-router.get('/projects/:id', Middleware.auth, Project.getProject);
 router.get('/projects', Middleware.auth, Project.getAllProjects);
+router.post('/projects', Middleware.auth, Project.registerProject);
+router.post('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.updateProject);
+router.get('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.getProject);
+router.post('/projects/:id/interviews', Middleware.auth, Middleware.projectAccessAuth, Project.postInterview);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
