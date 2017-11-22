@@ -47,16 +47,28 @@ const getAllProjects = (req, res) => {
 };
 
 const registerInterview = (req, res) => {
-    const newInterview = req.body;
+    const newInterview = {};
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
-            newInterview.startDate = new Date(req.body.startDate);
-            newInterview.endDate = new Date(req.body.endDate);
+            newInterview.type = req.body.type;
+            newInterview.location = req.body.location;
+            newInterview.apps = req.body.apps;
+            newInterview.interviewDate = new Date(req.body.interviewDate);
             newInterview.openDate = new Date(req.body.openDate);
             newInterview.closeDate = new Date(req.body.closeDate);
+            newInterview.plans = req.body.plans;
             newInterview.totalCount = 5;
+            newInterview.timeSlots = [];
+
+            if(req.body.timeSlotTimes) {
+                req.body.timeSlotTimes.forEach(timeSlotTime => {
+                    newInterview.timeSlots.push({
+                        time: timeSlotTime
+                    });
+                });
+            }
 
             return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
         })
