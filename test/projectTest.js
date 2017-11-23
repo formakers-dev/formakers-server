@@ -162,14 +162,14 @@ describe('Project', () => {
                 .send(testInterviewData)
                 .expect(200)
                 .then(res => {
-                    res.body.interviewSeq.should.be.eql(1);
+                    res.body.interviewSeq.should.be.eql(0);
                     return Projects.findOne({projectId: myData.projectId}).exec();
                 })
                 .then(project => {
                     project.interviews.length.should.be.eql(1);
 
                     const interview = project.interviews[0];
-                    interview.seq.should.be.eql(1);
+                    interview.seq.should.be.eql(0);
                     interview.type.should.be.eql('오프라인 테스트');
                     interview.location.should.be.eql('향군타워 5층');
                     interview.apps.should.be.eql(['com.kakao.talk', 'com.nhn.android.search']);
@@ -182,9 +182,9 @@ describe('Project', () => {
                         {minute: 30, plan: '인터뷰'}
                     ]);
                     interview.timeSlots.should.be.eql([
-                        {id:10600, time: 6},
-                        {id:10700, time: 7},
-                        {id:11300, time: 13}
+                        {id:10000, time: 6},
+                        {id:10001, time: 7},
+                        {id:10002, time: 13}
                     ]);
 
                     done();
@@ -204,13 +204,13 @@ describe('Project', () => {
                     .send(testInterviewData)
                     .expect(200)
                     .then(res => {
-                        res.body.interviewSeq.should.be.eql(2);
+                        res.body.interviewSeq.should.be.eql(1);
                         return Projects.findOne({projectId: myData.projectId}).exec();
                     })
                     .then(project => {
                         project.interviews.length.should.be.eql(2);
-                        project.interviews[0].seq.should.be.eql(1);
-                        project.interviews[1].seq.should.be.eql(2);
+                        project.interviews[0].seq.should.be.eql(0);
+                        project.interviews[1].seq.should.be.eql(1);
                         done();
                     })
                     .catch(err => done(err));
