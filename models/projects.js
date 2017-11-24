@@ -12,6 +12,7 @@ const interviewSchema = new Schema({
     seq: Number,
     type: String,
     location: String,
+    locationDescription: String,
     apps: Array,
     openDate: Date,
     closeDate: Date,

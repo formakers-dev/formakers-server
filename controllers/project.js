@@ -67,6 +67,7 @@ const registerInterview = (req, res) => {
             newInterview.seq = (project && project.interviews) ? project.interviews.length : 0;
             newInterview.type = req.body.type;
             newInterview.location = req.body.location;
+            newInterview.locationDescription = req.body.locationDescription;
             newInterview.apps = req.body.apps;
             newInterview.interviewDate = new Date(req.body.interviewDate);
             newInterview.openDate = new Date(req.body.openDate);
