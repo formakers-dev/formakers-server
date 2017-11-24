@@ -181,11 +181,11 @@ describe('Project', () => {
                         {minute: 10, plan: '제품소개'},
                         {minute: 30, plan: '인터뷰'}
                     ]);
-                    interview.timeSlots.should.be.eql([
-                        {id:10000, time: 6},
-                        {id:10001, time: 7},
-                        {id:10002, time: 13}
-                    ]);
+                    interview.timeSlot.should.be.eql({
+                        'time6': '',
+                        'time7': '',
+                        'time13': ''
+                    });
 
                     done();
                 })

@@ -51,8 +51,7 @@ const registerInterview = (req, res) => {
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
-            const seq = (project && project.interviews) ? project.interviews.length : 0;
-            newInterview.seq = seq;
+            newInterview.seq = (project && project.interviews) ? project.interviews.length : 0;
             newInterview.type = req.body.type;
             newInterview.location = req.body.location;
             newInterview.apps = req.body.apps;
@@ -61,16 +60,14 @@ const registerInterview = (req, res) => {
             newInterview.closeDate = new Date(req.body.closeDate);
             newInterview.plans = req.body.plans;
             newInterview.totalCount = 5;
-            newInterview.timeSlots = [];
+            newInterview.timeSlot = {};
 
             const timeSlots = req.body.timeSlotTimes;
 
             if(timeSlots) {
                 timeSlots.forEach(timeSlotTime => {
-                    newInterview.timeSlots.push({
-                        id: ((seq + 1) * 10000 + timeSlots.indexOf(timeSlotTime)),
-                        time: timeSlotTime
-                    });
+                    const id = 'time' + timeSlotTime;
+                    newInterview.timeSlot[id] = '';
                 });
             }
 
