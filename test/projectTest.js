@@ -25,7 +25,7 @@ describe('Project', () => {
         description: '프로젝트 상세 설명',
         descriptionImages: ['/desc/image1', '/desc/image2'],
         status: 'temporary',
-        interviewer: {
+        owner: {
             'name': '혜리',
             'url': 'https://toonStoryUrl',
             'introduce': '툰스토리 디자이너'
@@ -47,7 +47,7 @@ describe('Project', () => {
             description: 'new프로젝트 상세 설명',
             descriptionImages: ['/desc/newimage1', '/desc/newimage2', '/desc/newimage3'],
             status: 'temporary',
-            interviewer: {
+            owner: {
                 'name': 'new혜리',
                 'url': 'https://newUrl',
                 'introduce': 'new디자이너'
@@ -66,9 +66,9 @@ describe('Project', () => {
                     project.description.should.be.eql('new프로젝트 상세 설명');
                     project.descriptionImages.should.be.eql(['/desc/newimage1', '/desc/newimage2', '/desc/newimage3']);
                     project.status.should.be.eql('temporary');
-                    project.interviewer.name.should.be.eql('new혜리');
-                    project.interviewer.url.should.be.eql('https://newUrl');
-                    project.interviewer.introduce.should.be.eql('new디자이너');
+                    project.owner.name.should.be.eql('new혜리');
+                    project.owner.url.should.be.eql('https://newUrl');
+                    project.owner.introduce.should.be.eql('new디자이너');
 
                     done();
                 })
@@ -95,9 +95,9 @@ describe('Project', () => {
                         project.description.should.be.eql('프로젝트 상세 설명 수정');
                         project.descriptionImages.should.be.eql(['/desc/image1', '/desc/image2']);
                         project.status.should.be.eql('temporary');
-                        project.interviewer.name.should.be.eql('혜리');
-                        project.interviewer.url.should.be.eql('https://toonStoryUrl');
-                        project.interviewer.introduce.should.be.eql('툰스토리 디자이너');
+                        project.owner.name.should.be.eql('혜리');
+                        project.owner.url.should.be.eql('https://toonStoryUrl');
+                        project.owner.introduce.should.be.eql('툰스토리 디자이너');
 
                         done();
                     });
