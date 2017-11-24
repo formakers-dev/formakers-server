@@ -5,7 +5,7 @@ const createProjectJsonFromRequest = (req) => {
     projectJson.customerId = req.user;
     projectJson.name = req.body.name;
     projectJson.introduce = req.body.introduce;
-    projectJson.images = req.body.images;
+    projectJson.image = req.body.image;
     projectJson.description = req.body.description;
     projectJson.descriptionImages = req.body.descriptionImages;
     projectJson.interviews = req.body.interviews;

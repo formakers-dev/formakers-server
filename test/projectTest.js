@@ -21,14 +21,26 @@ describe('Project', () => {
         customerId: config.testCustomerId,
         name: 'old-test-project',
         introduce: '간단소개',
-        images: ['/image1', '/image2'],
+        image: {
+            name: 'image1',
+            url: '/image1'
+        },
         description: '프로젝트 상세 설명',
-        descriptionImages: ['/desc/image1', '/desc/image2'],
+        descriptionImages: [{
+            name: 'descImage1',
+            url: '/desc/image1'
+        },{
+            name: 'descImage2',
+            url: '/desc/image2'
+        }],
         status: 'temporary',
         owner: {
-            'name': '혜리',
-            'url': 'https://toonStoryUrl',
-            'introduce': '툰스토리 디자이너'
+            name: '혜리',
+            image: {
+                name: 'toonImage',
+                url: 'https://toonStoryUrl'
+            },
+            introduce: '툰스토리 디자이너'
         },
         videoUrl: 'www.video.com'
     };
@@ -44,14 +56,29 @@ describe('Project', () => {
         const newData = {
             name: 'new-test-project',
             introduce: 'new간단소개',
-            images: ['/newimage1'],
+            image: {
+                name: 'newImage1',
+                url: '/newimage1'
+            },
             description: 'new프로젝트 상세 설명',
-            descriptionImages: ['/desc/newimage1', '/desc/newimage2', '/desc/newimage3'],
+            descriptionImages: [{
+                name: 'descNewImage1',
+                url: '/desc/newimage1'
+            },{
+                name: 'descNewImage2',
+                url: '/desc/newimage2'
+            },{
+                name: 'descNewImage3',
+                url: '/desc/newimage3'
+            }],
             status: 'temporary',
             owner: {
-                'name': 'new혜리',
-                'url': 'https://newUrl',
-                'introduce': 'new디자이너'
+                name: 'new혜리',
+                image: {
+                    name: 'newUrl',
+                    url: 'https://newUrl',
+                },
+                introduce: 'new디자이너'
             },
             videoUrl: 'new.video.com'
         };
@@ -64,12 +91,20 @@ describe('Project', () => {
                 .then(project => {
                     project.name.should.be.eql('new-test-project');
                     project.introduce.should.be.eql('new간단소개');
-                    project.images.should.be.eql(['/newimage1']);
+                    project.image.name.should.be.eql('newImage1');
+                    project.image.url.should.be.eql('/newimage1');
                     project.description.should.be.eql('new프로젝트 상세 설명');
-                    project.descriptionImages.should.be.eql(['/desc/newimage1', '/desc/newimage2', '/desc/newimage3']);
+                    project.descriptionImages.length.should.be.eql(3);
+                    project.descriptionImages[0].name.should.be.eql('descNewImage1');
+                    project.descriptionImages[0].url.should.be.eql('/desc/newimage1');
+                    project.descriptionImages[1].name.should.be.eql('descNewImage2');
+                    project.descriptionImages[1].url.should.be.eql('/desc/newimage2');
+                    project.descriptionImages[2].name.should.be.eql('descNewImage3');
+                    project.descriptionImages[2].url.should.be.eql('/desc/newimage3');
                     project.status.should.be.eql('temporary');
                     project.owner.name.should.be.eql('new혜리');
-                    project.owner.url.should.be.eql('https://newUrl');
+                    project.owner.image.name.should.be.eql('newUrl');
+                    project.owner.image.url.should.be.eql('https://newUrl');
                     project.owner.introduce.should.be.eql('new디자이너');
                     project.videoUrl.should.be.eql('new.video.com');
 
@@ -95,12 +130,19 @@ describe('Project', () => {
                     project.customerId.should.be.eql(myData.customerId);
                     project.name.should.be.eql('old-test-project');
                     project.introduce.should.be.eql('간단소개');
-                    project.images.should.be.eql(['/image1', '/image2']);
+                    project.image.name.should.be.eql('image1');
+                    project.image.url.should.be.eql('/image1');
                     project.description.should.be.eql('프로젝트 상세 설명 수정');
-                    project.descriptionImages.should.be.eql(['/desc/image1', '/desc/image2']);
+
+                    project.descriptionImages.length.should.be.eql(2);
+                    project.descriptionImages[0].name.should.be.eql('descImage1');
+                    project.descriptionImages[0].url.should.be.eql('/desc/image1');
+                    project.descriptionImages[1].name.should.be.eql('descImage2');
+                    project.descriptionImages[1].url.should.be.eql('/desc/image2');
                     project.status.should.be.eql('temporary');
                     project.owner.name.should.be.eql('혜리');
-                    project.owner.url.should.be.eql('https://toonStoryUrl');
+                    project.owner.image.name.should.be.eql('toonImage');
+                    project.owner.image.url.should.be.eql('https://toonStoryUrl');
                     project.owner.introduce.should.be.eql('툰스토리 디자이너');
 
                     done();

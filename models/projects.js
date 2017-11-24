@@ -2,9 +2,14 @@ const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const Schema = mongoose.Schema;
 
+const imageSchema = new Schema({
+    name: String,
+    url: String
+});
+
 const ownerSchema = new Schema({
     name: String,
-    url: String,
+    image: imageSchema,
     introduce: String,
 });
 
@@ -27,9 +32,9 @@ const projectSchema = new Schema({
     customerId: String,
     name: String,
     introduce: String,
-    images: Array,
+    image: imageSchema,
     description: String,
-    descriptionImages: Array,
+    descriptionImages: [imageSchema],
     interviews: [interviewSchema],
     status: String,
     owner: ownerSchema,
