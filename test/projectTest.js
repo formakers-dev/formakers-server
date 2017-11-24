@@ -160,14 +160,14 @@ describe('Project', () => {
                 .send(testInterviewData)
                 .expect(200)
                 .then(res => {
-                    res.body.interviewSeq.should.be.eql(0);
+                    res.body.interviewSeq.should.be.eql(1);
                     return Projects.findOne({projectId: myData.projectId}).exec();
                 })
                 .then(project => {
                     project.interviews.length.should.be.eql(1);
 
                     const interview = project.interviews[0];
-                    interview.seq.should.be.eql(0);
+                    interview.seq.should.be.eql(1);
                     interview.type.should.be.eql('오프라인 테스트');
                     interview.location.should.be.eql('향군타워 5층');
                     interview.locationDescription.should.be.eql('여기서봐요...');
@@ -200,13 +200,13 @@ describe('Project', () => {
                     .send(testInterviewData)
                     .expect(200)
                     .then(res => {
-                        res.body.interviewSeq.should.be.eql(1);
+                        res.body.interviewSeq.should.be.eql(2);
                         return Projects.findOne({projectId: myData.projectId}).exec();
                     })
                     .then(project => {
                         project.interviews.length.should.be.eql(2);
-                        project.interviews[0].seq.should.be.eql(0);
-                        project.interviews[1].seq.should.be.eql(1);
+                        project.interviews[0].seq.should.be.eql(1);
+                        project.interviews[1].seq.should.be.eql(2);
                         done();
                     })
                     .catch(err => done(err));

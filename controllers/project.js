@@ -64,7 +64,7 @@ const registerInterview = (req, res) => {
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
-            newInterview.seq = (project && project.interviews) ? project.interviews.length : 0;
+            newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
             newInterview.type = req.body.type;
             newInterview.location = req.body.location;
             newInterview.locationDescription = req.body.locationDescription;
