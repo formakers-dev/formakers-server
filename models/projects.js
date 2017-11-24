@@ -17,7 +17,6 @@ const interviewSchema = new Schema({
     closeDate: Date,
     interviewDate: Date,
     totalCount: Number,
-    plans: Array,
     timeSlot: Object,
     emergencyPhone: String
 });

@@ -150,13 +150,6 @@ describe('Project', () => {
             openDate: '2017-11-01T00:00:00.000Z',
             closeDate: '2017-11-02T00:00:00.000Z',
             interviewDate: '2017-11-03T00:00:00.000Z',
-            plans: [{
-                minute: 10,
-                plan: '제품소개',
-            }, {
-                minute: 30,
-                plan: '인터뷰',
-            }],
             timeSlotTimes: [6, 7, 13],
             emergencyPhone: '010-1234-5678'
         };
@@ -181,10 +174,6 @@ describe('Project', () => {
                     interview.closeDate.should.be.eql(new Date('2017-11-02T00:00:00.000Z'));
                     interview.interviewDate.should.be.eql(new Date('2017-11-03T00:00:00.000Z'));
                     interview.totalCount.should.be.eql(5);
-                    interview.plans.should.be.eql([
-                        {minute: 10, plan: '제품소개'},
-                        {minute: 30, plan: '인터뷰'}
-                    ]);
                     interview.timeSlot.should.be.eql({
                         'time6': '',
                         'time7': '',
