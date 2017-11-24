@@ -92,18 +92,18 @@ describe('Project', () => {
                     return Projects.findOne({projectId: myData.projectId});
                 })
                 .then(project => {
-                        project.customerId.should.be.eql(myData.customerId);
-                        project.name.should.be.eql('old-test-project');
-                        project.introduce.should.be.eql('간단소개');
-                        project.images.should.be.eql(['/image1', '/image2']);
-                        project.description.should.be.eql('프로젝트 상세 설명 수정');
-                        project.descriptionImages.should.be.eql(['/desc/image1', '/desc/image2']);
-                        project.status.should.be.eql('temporary');
-                        project.owner.name.should.be.eql('혜리');
-                        project.owner.url.should.be.eql('https://toonStoryUrl');
-                        project.owner.introduce.should.be.eql('툰스토리 디자이너');
+                    project.customerId.should.be.eql(myData.customerId);
+                    project.name.should.be.eql('old-test-project');
+                    project.introduce.should.be.eql('간단소개');
+                    project.images.should.be.eql(['/image1', '/image2']);
+                    project.description.should.be.eql('프로젝트 상세 설명 수정');
+                    project.descriptionImages.should.be.eql(['/desc/image1', '/desc/image2']);
+                    project.status.should.be.eql('temporary');
+                    project.owner.name.should.be.eql('혜리');
+                    project.owner.url.should.be.eql('https://toonStoryUrl');
+                    project.owner.introduce.should.be.eql('툰스토리 디자이너');
 
-                        done();
+                    done();
                 }).catch(err => done(err));
         });
 
@@ -157,7 +157,8 @@ describe('Project', () => {
                 minute: 30,
                 plan: '인터뷰',
             }],
-            timeSlotTimes: [6, 7, 13]
+            timeSlotTimes: [6, 7, 13],
+            emergencyPhone: '010-1234-5678'
         };
 
         it('프로젝트의 인터뷰 정보를 저장한다', done => {
@@ -189,6 +190,7 @@ describe('Project', () => {
                         'time7': '',
                         'time13': ''
                     });
+                    interview.emergencyPhone.should.be.eql('010-1234-5678');
 
                     done();
                 })

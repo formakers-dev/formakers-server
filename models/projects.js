@@ -2,6 +2,26 @@ const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const Schema = mongoose.Schema;
 
+const ownerSchema = new Schema({
+    name: String,
+    url: String,
+    introduce: String,
+});
+
+const interviewSchema = new Schema({
+    seq: Number,
+    type: String,
+    location: String,
+    apps: Array,
+    openDate: Date,
+    closeDate: Date,
+    interviewDate: Date,
+    totalCount: Number,
+    plans: Array,
+    timeSlot: Object,
+    emergencyPhone: String
+});
+
 const projectSchema = new Schema({
     projectId: Number,
     customerId: String,
@@ -10,9 +30,9 @@ const projectSchema = new Schema({
     images: Array,
     description: String,
     descriptionImages: Array,
-    interviews: Array,
+    interviews: [interviewSchema],
     status: String,
-    owner: Object,
+    owner: ownerSchema,
     videoUrl: String,
 });
 

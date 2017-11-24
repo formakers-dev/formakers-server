@@ -72,6 +72,7 @@ const registerInterview = (req, res) => {
             newInterview.openDate = new Date(req.body.openDate);
             newInterview.closeDate = new Date(req.body.closeDate);
             newInterview.plans = req.body.plans;
+            newInterview.emergencyPhone = req.body.emergencyPhone;
             newInterview.totalCount = 5;
             newInterview.timeSlot = {};
 
