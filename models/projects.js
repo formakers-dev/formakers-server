@@ -24,7 +24,8 @@ const interviewSchema = new Schema({
     interviewDate: Date,
     totalCount: Number,
     timeSlot: Object,
-    emergencyPhone: String
+    emergencyPhone: String,
+    notifiedUserIds: Array,
 });
 
 const projectSchema = new Schema({
