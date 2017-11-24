@@ -1,8 +1,22 @@
 const Projects = require('../models/projects');
 
+const createProjectJsonFromRequest = (req) => {
+    const projectJson = {};
+    projectJson.customerId = req.user;
+    projectJson.name = req.body.name;
+    projectJson.introduce = req.body.introduce;
+    projectJson.images = req.body.images;
+    projectJson.description = req.body.description;
+    projectJson.descriptionImages = req.body.descriptionImages;
+    projectJson.interviews = req.body.interviews;
+    projectJson.status = req.body.status;
+    projectJson.owner = req.body.owner;
+    projectJson.videoUrl = req.body.videoUrl;
+    return projectJson;
+};
+
 const registerProject = (req, res) => {
-    const newProject = req.body;
-    newProject.customerId = req.user;
+    const newProject = createProjectJsonFromRequest(req);
 
     Projects.create(newProject)
         .then(result => res.json({
@@ -15,10 +29,9 @@ const registerProject = (req, res) => {
 };
 
 const updateProject = (req, res) => {
-    const data = req.body;
-    data.customerId = req.user;
+    const data = createProjectJsonFromRequest(req);
 
-    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data}, {upsert: true})
+    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data})
         .then(project => res.json({
             "projectId": project.projectId
         }))
@@ -64,7 +77,7 @@ const registerInterview = (req, res) => {
 
             const timeSlots = req.body.timeSlotTimes;
 
-            if(timeSlots) {
+            if (timeSlots) {
                 timeSlots.forEach(timeSlotTime => {
                     const id = 'time' + timeSlotTime;
                     newInterview.timeSlot[id] = '';

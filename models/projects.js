@@ -12,7 +12,8 @@ const projectSchema = new Schema({
     descriptionImages: Array,
     interviews: Array,
     status: String,
-    owner: Object
+    owner: Object,
+    videoUrl: String,
 });
 
 projectSchema.plugin(autoIncrement.plugin, {model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1});

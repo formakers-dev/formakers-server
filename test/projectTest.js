@@ -29,7 +29,8 @@ describe('Project', () => {
             'name': '혜리',
             'url': 'https://toonStoryUrl',
             'introduce': '툰스토리 디자이너'
-        }
+        },
+        videoUrl: 'www.video.com'
     };
 
     beforeEach((done) => {
@@ -51,7 +52,8 @@ describe('Project', () => {
                 'name': 'new혜리',
                 'url': 'https://newUrl',
                 'introduce': 'new디자이너'
-            }
+            },
+            videoUrl: 'new.video.com'
         };
 
         it('projectId를 생성하고 신규 projectId를 반환한다', done => {
@@ -69,6 +71,7 @@ describe('Project', () => {
                     project.owner.name.should.be.eql('new혜리');
                     project.owner.url.should.be.eql('https://newUrl');
                     project.owner.introduce.should.be.eql('new디자이너');
+                    project.videoUrl.should.be.eql('new.video.com');
 
                     done();
                 })
@@ -86,8 +89,9 @@ describe('Project', () => {
                 .expect(200)
                 .then(res => {
                     res.body.projectId.should.be.eql(myData.projectId);
-
-                    Projects.findOne({projectId: myData.projectId}, (err, project) => {
+                    return Projects.findOne({projectId: myData.projectId});
+                })
+                .then(project => {
                         project.customerId.should.be.eql(myData.customerId);
                         project.name.should.be.eql('old-test-project');
                         project.introduce.should.be.eql('간단소개');
@@ -100,7 +104,6 @@ describe('Project', () => {
                         project.owner.introduce.should.be.eql('툰스토리 디자이너');
 
                         done();
-                    });
                 }).catch(err => done(err));
         });
 
