@@ -15,6 +15,22 @@ const config = {
             projectId: process.env.FIREBASE_PROJECT_ID,
         }
     },
+    release : {
+        baseUrl: process.env.BASE_URL,
+        frontendBaseUrl: process.env.FRONTEND_BASE_URL,
+        dbUrl: process.env.MONGO_URL,
+        port: process.env.PORT || 80,
+        google_client_id: process.env.GOOGLE_CLIENT_ID,
+        google_client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        firebase_messaging: {
+            serverKey: process.env.SERVER_KEY
+        },
+        firebase: {
+            apiKey: process.env.FIREBASE_API_KEY,
+            databaseURL: process.env.FIREBASE_DATABASE_URL,
+            projectId: process.env.FIREBASE_PROJECT_ID,
+        }
+    },
     test: {
         baseUrl: 'http://localhost:8081',
         dbUrl: process.env.MONGO_URL,
