@@ -29,7 +29,7 @@ describe('Project', () => {
         descriptionImages: [{
             name: 'descImage1',
             url: '/desc/image1'
-        },{
+        }, {
             name: 'descImage2',
             url: '/desc/image2'
         }],
@@ -64,10 +64,10 @@ describe('Project', () => {
             descriptionImages: [{
                 name: 'descNewImage1',
                 url: '/desc/newimage1'
-            },{
+            }, {
                 name: 'descNewImage2',
                 url: '/desc/newimage2'
-            },{
+            }, {
                 name: 'descNewImage3',
                 url: '/desc/newimage3'
             }],
@@ -189,7 +189,13 @@ describe('Project', () => {
             type: '오프라인 테스트',
             location: '향군타워 5층',
             locationDescription: '여기서봐요...',
-            apps: ['com.kakao.talk', 'com.nhn.android.search'],
+            apps: [{
+                packageName: 'com.kakao.talk',
+                appName: '카카오톡'
+            }, {
+                packageName: 'com.nhn.android.search',
+                appName: '네이버검색'
+            }],
             openDate: '2017-11-01T00:00:00.000Z',
             closeDate: '2017-11-02T00:00:00.000Z',
             interviewDate: '2017-11-03T00:00:00.000Z',
@@ -213,7 +219,10 @@ describe('Project', () => {
                     interview.type.should.be.eql('오프라인 테스트');
                     interview.location.should.be.eql('향군타워 5층');
                     interview.locationDescription.should.be.eql('여기서봐요...');
-                    interview.apps.should.be.eql(['com.kakao.talk', 'com.nhn.android.search']);
+                    interview.apps[0].packageName.should.be.eql('com.kakao.talk');
+                    interview.apps[0].appName.should.be.eql('카카오톡');
+                    interview.apps[1].packageName.should.be.eql('com.nhn.android.search');
+                    interview.apps[1].appName.should.be.eql('네이버검색');
                     interview.openDate.should.be.eql(new Date('2017-11-01T00:00:00.000Z'));
                     interview.closeDate.should.be.eql(new Date('2017-11-02T00:00:00.000Z'));
                     interview.interviewDate.should.be.eql(new Date('2017-11-03T00:00:00.000Z'));
