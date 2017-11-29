@@ -187,6 +187,7 @@ describe('Project', () => {
     describe('POST /projects/{id}/interviews', () => {
         const testInterviewData = {
             type: '오프라인 테스트',
+            introduce: '인터뷰 소개',
             location: '향군타워 5층',
             locationDescription: '여기서봐요...',
             apps: [{
@@ -217,6 +218,7 @@ describe('Project', () => {
                     const interview = project.interviews[0];
                     interview.seq.should.be.eql(1);
                     interview.type.should.be.eql('오프라인 테스트');
+                    interview.introduce.should.be.eql('인터뷰 소개');
                     interview.location.should.be.eql('향군타워 5층');
                     interview.locationDescription.should.be.eql('여기서봐요...');
                     interview.apps[0].packageName.should.be.eql('com.kakao.talk');
