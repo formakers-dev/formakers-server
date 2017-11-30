@@ -18,9 +18,9 @@ passport.use(new GoogleStrategy({
     clientSecret: config.google_client_secret,
     callbackURL: config.baseUrl + "/auth/google/callback"
 }, function (accessToken, refreshToken, profile, done) {
-    let customer = {};
+    const customer = {};
     customer.id = profile.provider + profile.id;
-    customer.provider = profile.displayName;
+    customer.provider = profile.provider;
     customer.providerId = profile.id;
     customer.name = profile.displayName;
     customer.email = (profile.emails)? profile.emails[0].value : "";
