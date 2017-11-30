@@ -66,6 +66,7 @@ const registerInterview = (req, res) => {
         .then(project => {
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
             newInterview.type = req.body.type;
+            newInterview.introduce = req.body.introduce;
             newInterview.location = req.body.location;
             newInterview.locationDescription = req.body.locationDescription;
             newInterview.apps = req.body.apps;
