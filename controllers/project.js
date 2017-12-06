@@ -60,6 +60,7 @@ const getAllProjects = (req, res) => {
 };
 
 const registerInterview = (req, res) => {
+    //TODO : 추후 로케일 적용시 setHours기준 로케일 변경 필요. 현재는 서버 기준(한국시간)으로 되어있음
     const newInterview = {};
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
@@ -71,8 +72,11 @@ const registerInterview = (req, res) => {
             newInterview.locationDescription = req.body.locationDescription;
             newInterview.apps = req.body.apps;
             newInterview.interviewDate = new Date(req.body.interviewDate);
+            newInterview.interviewDate.setHours(23, 59, 59, 999);
             newInterview.openDate = new Date(req.body.openDate);
+            newInterview.openDate.setHours(0, 0, 0, 0);
             newInterview.closeDate = new Date(req.body.closeDate);
+            newInterview.closeDate.setHours(23, 59, 59, 999);
             newInterview.emergencyPhone = req.body.emergencyPhone;
             newInterview.totalCount = 5;
             newInterview.timeSlot = {};
