@@ -62,12 +62,12 @@ const getAllProjects = (req, res) => {
 
 const getTruncatedDate = (dateString) => {
     moment.locale('ko');
-    return moment(dateString).hours(0).minutes(0).seconds(0).milliseconds(0);
+    return moment(dateString).hours(0).minutes(0).seconds(0).milliseconds(0).toDate();
 };
 
 const getEndTimeOfTheDate = (dateString) => {
     moment.locale('ko');
-    return moment(dateString).hours(23).minutes(59).seconds(59).milliseconds(999);
+    return moment(dateString).hours(23).minutes(59).seconds(59).milliseconds(999).toDate();
 };
 
 const registerInterview = (req, res) => {
