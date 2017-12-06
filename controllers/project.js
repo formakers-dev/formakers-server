@@ -107,12 +107,11 @@ const registerInterview = (req, res) => {
 
             console.log("===moment start====");
             moment.locale('ko');
-            console.log(moment(req.body.interviewDate));
-            console.log(moment(req.body.interviewDate).getTime());
+            console.log(moment(req.body.interviewDate).getDate());
 
             moment.locale('en');
             console.log(moment(req.body.interviewDate));
-            console.log(moment(req.body.interviewDate).getTime());
+            console.log(moment(req.body.interviewDate).getDate());
 
             return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
         })
