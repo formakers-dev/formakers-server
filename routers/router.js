@@ -24,7 +24,7 @@ router.get('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Proje
 router.post('/projects/:id/interviews', Middleware.auth, Middleware.projectAccessAuth, Project.registerInterview);
 
 router.get('/', (req, res) => {
-    res.send('Hello, AppBee Customer!');
+    res.send('Hello, AppBee Customer! ::: ' + new Date());
 });
 
 module.exports = router;
