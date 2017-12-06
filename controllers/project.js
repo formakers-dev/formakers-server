@@ -1,7 +1,4 @@
-const moment = require('moment');
 const Projects = require('../models/projects');
-
-moment.locale('ko');
 
 const createProjectJsonFromRequest = (req) => {
     const projectJson = {};
@@ -62,34 +59,24 @@ const getAllProjects = (req, res) => {
         .catch(err => res.status(500).json({error: err}));
 };
 
-const getTruncatedDate = (dateString) => {
-    return moment(dateString).hours(0).minutes(0).seconds(0).milliseconds(0).toDate();
-};
-
-const getEndTimeOfTheDate = (dateString) => {
-    return moment(dateString).hours(23).minutes(59).seconds(59).milliseconds(999).toDate();
-};
-
 const registerInterview = (req, res) => {
-    //TODO : 추후 로케일 적용시 setHours기준 로케일 변경 필요. 현재는 서버 기준(한국시간)으로 되어있음
     const newInterview = {};
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
-
             newInterview.type = req.body.type;
             newInterview.introduce = req.body.introduce;
             newInterview.location = req.body.location;
             newInterview.locationDescription = req.body.locationDescription;
             newInterview.apps = req.body.apps;
-            newInterview.interviewDate = getEndTimeOfTheDate(req.body.interviewDate);
-            newInterview.openDate = getTruncatedDate(req.body.openDate);
-            newInterview.closeDate = getEndTimeOfTheDate(req.body.closeDate);
+            newInterview.interviewDate = req.body.interviewDate;
+            newInterview.openDate = req.body.openDate;
+            newInterview.closeDate = req.body.closeDate;
             newInterview.emergencyPhone = req.body.emergencyPhone;
-
             newInterview.totalCount = 5;
             newInterview.timeSlot = {};
+
             const timeSlots = req.body.timeSlotTimes;
 
             if (timeSlots) {
