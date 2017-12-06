@@ -1,6 +1,8 @@
 const moment = require('moment');
 const Projects = require('../models/projects');
 
+moment.locale('ko');
+
 const createProjectJsonFromRequest = (req) => {
     const projectJson = {};
     projectJson.customerId = req.user;
@@ -61,12 +63,10 @@ const getAllProjects = (req, res) => {
 };
 
 const getTruncatedDate = (dateString) => {
-    moment.locale('ko');
     return moment(dateString).hours(0).minutes(0).seconds(0).milliseconds(0).toDate();
 };
 
 const getEndTimeOfTheDate = (dateString) => {
-    moment.locale('ko');
     return moment(dateString).hours(23).minutes(59).seconds(59).milliseconds(999).toDate();
 };
 
@@ -76,7 +76,9 @@ const registerInterview = (req, res) => {
 
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
+            console.log(req.body);
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
+
             newInterview.type = req.body.type;
             newInterview.introduce = req.body.introduce;
             newInterview.location = req.body.location;
@@ -85,21 +87,22 @@ const registerInterview = (req, res) => {
             newInterview.interviewDate = getEndTimeOfTheDate(req.body.interviewDate);
             newInterview.openDate = getTruncatedDate(req.body.openDate);
             newInterview.closeDate = getEndTimeOfTheDate(req.body.closeDate);
-
-            console.log(newInterview);
-
             newInterview.emergencyPhone = req.body.emergencyPhone;
+
             newInterview.totalCount = 5;
             newInterview.timeSlot = {};
-
             const timeSlots = req.body.timeSlotTimes;
 
             if (timeSlots) {
+
                 timeSlots.forEach(timeSlotTime => {
                     const id = 'time' + timeSlotTime;
                     newInterview.timeSlot[id] = '';
                 });
             }
+            console.log(newInterview);
+            console.log(moment.locale());
+            console.log(newInterview.openDate.getTime());
 
             return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
         })
