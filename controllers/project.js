@@ -54,7 +54,9 @@ const getProject = (req, res) => {
 };
 
 const getAllProjects = (req, res) => {
-    Projects.find({customerId: req.user}).exec()
+    Projects.find({customerId: req.user})
+        .sort({projectId: -1})
+        .exec()
         .then(result => res.json(result))
         .catch(err => res.status(500).json({error: err}));
 };

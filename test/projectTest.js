@@ -157,12 +157,48 @@ describe('Project', () => {
     });
 
     describe('GET /projects', () => {
-        it('본인의 프로젝트 목록를 리턴한다', done => {
+        const myData2 = {
+            projectId: 10000000000,
+            customerId: config.testCustomerId,
+            name: 'old-test-project2',
+            introduce: '간단소개2',
+            image: {
+                name: 'image2',
+                url: '/image2'
+            },
+            description: '프로젝트 상세 설명2',
+            descriptionImages: [{
+                name: 'descImage12',
+                url: '/desc/image12'
+            }, {
+                name: 'descImage22',
+                url: '/desc/image22'
+            }],
+            status: 'temporary',
+            owner: {
+                name: '혜리2',
+                image: {
+                    name: 'toonImage2',
+                    url: 'https://toonStoryUrl2'
+                },
+                introduce: '툰스토리 디자이너2'
+            },
+            videoUrl: 'www.video.com2'
+        };
+
+        beforeEach((done) => {
+            Projects.create(myData2, done);
+        });
+
+        it('본인의 프로젝트 목록를 프로젝트ID역순으로 리턴한다', done => {
             request.get('/projects')
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(1);
+                    res.body.length.should.be.eql(2);
                     res.body[0].customerId.should.be.eql(config.testCustomerId);
+                    res.body[0].projectId.should.be.eql(10000000000);
+                    res.body[1].customerId.should.be.eql(config.testCustomerId);
+                    res.body[1].projectId.should.be.eql(config.testProjectId);
                     done();
                 }).catch(err => done(err));
         });
