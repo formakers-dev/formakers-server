@@ -197,9 +197,9 @@ describe('Project', () => {
                 packageName: 'com.nhn.android.search',
                 appName: '네이버검색'
             }],
-            openDate: '2017-11-01',
-            closeDate: '2017-11-02',
-            interviewDate: '2017-11-03',
+            openDate: 1509462000000,         //2017-11-01 00:00:00.000 KST
+            closeDate: 1509634799999,        //2017-11-02 23:59:59.999 KST
+            interviewDate: 1509721199999,    //2017-11-03 23:59:59.999 KST
             timeSlotTimes: [6, 7, 13],
             emergencyPhone: '010-1234-5678'
         };
