@@ -209,8 +209,7 @@ describe('Project', () => {
             request.get('/projects/' + myData.projectId)
                 .expect(200)
                 .then(res => {
-                    res.body.length.should.be.eql(1);
-                    res.body[0].projectId.should.be.eql(myData.projectId);
+                    res.body.projectId.should.be.eql(myData.projectId);
                     done();
                 }).catch(err => done(err));
         });

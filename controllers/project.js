@@ -45,8 +45,8 @@ const getProject = (req, res) => {
     const projectId = req.params.id;
 
     if (projectId) {
-        Projects.find({projectId: projectId}).exec()
-            .then(result => res.json(result))
+        Projects.findOne({projectId: projectId}).exec()
+            .then(project => res.json(project))
             .catch(err => res.status(500).json({error: err}));
     } else {
         res.sendStatus(500);
