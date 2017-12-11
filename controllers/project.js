@@ -32,9 +32,7 @@ const updateProject = (req, res) => {
     const data = createProjectJsonFromRequest(req);
 
     Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data})
-        .then(project => res.json({
-            "projectId": project.projectId
-        }))
+        .then(() => res.sendStatus(200))
         .catch(err => {
             console.log(err);
             res.status(500).json({error: err});

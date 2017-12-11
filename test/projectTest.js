@@ -122,10 +122,7 @@ describe('Project', () => {
             request.put('/projects/' + myData.projectId)
                 .send(updatingData)
                 .expect(200)
-                .then(res => {
-                    res.body.projectId.should.be.eql(myData.projectId);
-                    return Projects.findOne({projectId: myData.projectId});
-                })
+                .then(() => Projects.findOne({projectId: myData.projectId}))
                 .then(project => {
                     project.customerId.should.be.eql(myData.customerId);
                     project.name.should.be.eql('old-test-project');
