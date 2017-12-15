@@ -97,4 +97,26 @@ const registerInterview = (req, res) => {
         });
 };
 
-module.exports = {registerProject, updateProject, getProject, getAllProjects, registerInterview};
+const getInterview = (req, res) => {
+    Projects.aggregate([
+        {$match: {projectId: parseInt(req.params.id), status: 'registered'}},
+        {$unwind: '$interviews'},
+        {$match: {'interviews.seq': parseInt(req.params.seq)}}
+    ])
+        .exec()
+        .then(interviews => {
+            if (!interviews || interviews.length === 0) {
+                res.sendStatus(406);
+                return;
+            }
+            res.json(interviews[0]);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
+};
+
+// TODO : updateInterview 추가 (PUT)
+
+module.exports = {registerProject, updateProject, getProject, getAllProjects, registerInterview, getInterview};

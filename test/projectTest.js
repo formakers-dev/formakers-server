@@ -306,6 +306,150 @@ describe('Project', () => {
         });
     });
 
+
+    describe('GET /projects/:id/interviews/:seq', () => {
+
+        const myDataWithInterview = {
+            projectId: 55555,
+            customerId: config.testCustomerId,
+            name: '인터뷰-조회용-project',
+            introduce: '간단소개',
+            image: {
+                name: 'image1',
+                url: '/image1'
+            },
+            description: '프로젝트 상세 설명',
+            descriptionImages: [{
+                name: 'descImage1',
+                url: '/desc/image1'
+            }, {
+                name: 'descImage2',
+                url: '/desc/image2'
+            }],
+            status: 'registered',
+            owner: {
+                name: '혜리',
+                image: {
+                    name: 'toonImage',
+                    url: 'https://toonStoryUrl'
+                },
+                introduce: '툰스토리 디자이너'
+            },
+            videoUrl: 'www.video.com',
+            interviews: [
+                {
+                    "timeSlot" : {
+                        "time6" : "",
+                        "time7" : "",
+                        "time8" : "google110897406327517511196",
+                        "time9" : "google112909653374339401399",
+                        "time10" : ""
+                    },
+                    "totalCount" : 5,
+                    "emergencyPhone" : "010-119-119",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription" : "수원사업장으로 오세요",
+                    "location" : "수원 사업장",
+                    "type" : "오프라인 인터뷰",
+                    "seq" : 1,
+                    "notifiedUserIds" : [
+                        "google112909653374339401399",
+                        "112909653374339401399",
+                        "116136954630190256240",
+                        "google116136954630190256240",
+                        "google110997368786962641889",
+                        "google110897406327517511196",
+                        "110897406327517511196",
+                        "109974316241227718963"
+                    ],
+                    "apps" : [
+                        {
+                            "packageName" : "com.google.android.gm",
+                            "appName" : "Gmail"
+                        }
+                    ]
+                }
+            ],
+        };
+
+
+        const notMyDataWithInterview = {
+            projectId: 4564566,
+            customerId: 'someoneId',
+            name: 'not-my-project',
+            interviews: [
+                {
+                    "timeSlot" : {
+                        "time6" : "",
+                        "time7" : "",
+                        "time8" : "google110897406327517511196",
+                        "time9" : "google112909653374339401399",
+                        "time10" : ""
+                    },
+                    "totalCount" : 5,
+                    "emergencyPhone" : "010-119-119",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription" : "수원사업장으로 오세요",
+                    "location" : "수원 사업장",
+                    "type" : "오프라인 인터뷰",
+                    "seq" : 1,
+                    "notifiedUserIds" : [
+                        "google112909653374339401399",
+                        "112909653374339401399",
+                        "116136954630190256240",
+                        "google116136954630190256240",
+                        "google110997368786962641889",
+                        "google110897406327517511196",
+                        "110897406327517511196",
+                        "109974316241227718963"
+                    ],
+                    "apps" : [
+                        {
+                            "packageName" : "com.google.android.gm",
+                            "appName" : "Gmail"
+                        }
+                    ]
+                }
+            ],
+        };
+
+
+        beforeEach((done) => {
+            Projects.create([myDataWithInterview, notMyDataWithInterview], done);
+        });
+
+        it('본인이 작성한 데이터인 경우 해당 프로젝트의 인터뷰 정보를 조회한다', done => {
+            request.get('/projects/' + myDataWithInterview.projectId + '/interviews/' + myDataWithInterview.interviews[0].seq)
+                .expect(200)
+                .then(res => {
+                    res.body.interviews.location.should.be.eql("수원 사업장");
+                    res.body.interviews.locationDescription.should.be.eql("수원사업장으로 오세요");
+                    res.body.interviews.openDate.should.be.eql("2017-10-31T15:00:00.000Z");
+                    res.body.interviews.closeDate.should.be.eql("2017-11-02T14:59:59.999Z");
+                    res.body.interviews.interviewDate.should.be.eql("2017-11-03T14:59:59.999Z");
+                    res.body.interviews.apps[0].packageName.should.be.eql("com.google.android.gm");
+                    res.body.interviews.apps[0].appName.should.be.eql("Gmail");
+                    res.body.interviews.emergencyPhone.should.be.eql("010-119-119");
+                    res.body.interviews.timeSlot.time6.should.be.eql("");
+                    res.body.interviews.timeSlot.time7.should.be.eql("");
+                    res.body.interviews.timeSlot.time8.should.be.eql("google110897406327517511196");
+                    res.body.interviews.timeSlot.time9.should.be.eql("google112909653374339401399");
+                    res.body.interviews.timeSlot.time10.should.be.eql("");
+                    res.body.interviews.totalCount.should.be.eql(5);
+                    done();
+                }).catch(err => done(err));
+        });
+
+        it('본인이 작성하지 않은 데이터인 경우 권한 없음 코드(401)를 리턴한다', done => {
+            request.get('/projects/' + notMyDataWithInterview.projectId + '/interviews/' + notMyDataWithInterview.interviews[0].seq)
+                .expect(401, done);
+        })
+    });
+
     afterEach(done => {
         sandbox.restore();
         Projects.remove({}, () => done());
