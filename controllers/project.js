@@ -60,32 +60,38 @@ const getAllProjects = (req, res) => {
         .catch(err => res.status(500).json({error: err}));
 };
 
-const registerInterview = (req, res) => {
-    const newInterview = {};
+function createInterviewJsonFromRequest(req) {
+    const interviewJson = {};
+    interviewJson.type = req.body.type;
+    interviewJson.introduce = req.body.introduce;
+    interviewJson.location = req.body.location;
+    interviewJson.locationDescription = req.body.locationDescription;
+    interviewJson.apps = req.body.apps;
+    interviewJson.interviewDate = req.body.interviewDate;
+    interviewJson.openDate = req.body.openDate;
+    interviewJson.closeDate = req.body.closeDate;
+    interviewJson.emergencyPhone = req.body.emergencyPhone;
+    interviewJson.timeSlot = {};
 
+    const timeSlots = req.body.timeSlotTimes;
+
+    if (timeSlots) {
+        timeSlots.forEach(timeSlotTime => {
+            const id = 'time' + timeSlotTime;
+            interviewJson.timeSlot[id] = '';
+        });
+    }
+
+    return interviewJson;
+}
+
+const registerInterview = (req, res) => {
+    let newInterview;
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
+            newInterview = createInterviewJsonFromRequest(req);
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
-            newInterview.type = req.body.type;
-            newInterview.introduce = req.body.introduce;
-            newInterview.location = req.body.location;
-            newInterview.locationDescription = req.body.locationDescription;
-            newInterview.apps = req.body.apps;
-            newInterview.interviewDate = req.body.interviewDate;
-            newInterview.openDate = req.body.openDate;
-            newInterview.closeDate = req.body.closeDate;
-            newInterview.emergencyPhone = req.body.emergencyPhone;
             newInterview.totalCount = 5;
-            newInterview.timeSlot = {};
-
-            const timeSlots = req.body.timeSlotTimes;
-
-            if (timeSlots) {
-                timeSlots.forEach(timeSlotTime => {
-                    const id = 'time' + timeSlotTime;
-                    newInterview.timeSlot[id] = '';
-                });
-            }
 
             return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
         })
@@ -118,6 +124,40 @@ const getInterview = (req, res) => {
         });
 };
 
-// TODO : updateInterview 추가 (PUT)
+const updateInterview = (req, res) => {
+    const projectId = req.params.id;
+    const interviewSeq = req.params.seq;
+    const interview = createInterviewJsonFromRequest(req);
 
-module.exports = {registerProject, updateProject, getProject, getAllProjects, registerInterview, getInterview};
+    //TODO : 인터뷰 모집 시작된 상태에서는 수정 불가하도록 처리
+    Projects.findOneAndUpdate({projectId: projectId, 'interviews.seq': interviewSeq},
+        {
+            'interviews.$.seq': interviewSeq,
+            'interviews.$.type': interview.type,
+            'interviews.$.introduce': interview.introduce,
+            'interviews.$.location': interview.location,
+            'interviews.$.locationDescription': interview.locationDescription,
+            'interviews.$.apps': interview.apps,
+            'interviews.$.interviewDate': interview.interviewDate,
+            'interviews.$.openDate': interview.openDate,
+            'interviews.$.closeDate': interview.closeDate,
+            'interviews.$.emergencyPhone': interview.emergencyPhone,
+            'interviews.$.timeSlot': interview.timeSlot
+        },
+        {upsert: true})
+        .then(() => res.sendStatus(200))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
+};
+
+module.exports = {
+    registerProject,
+    updateProject,
+    getProject,
+    getAllProjects,
+    registerInterview,
+    getInterview,
+    updateInterview
+};

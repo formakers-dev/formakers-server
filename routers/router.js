@@ -23,6 +23,7 @@ router.put('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Proje
 router.get('/projects/:id', Middleware.auth, Middleware.projectAccessAuth, Project.getProject);
 router.post('/projects/:id/interviews', Middleware.auth, Middleware.projectAccessAuth, Project.registerInterview);
 router.get('/projects/:id/interviews/:seq', Middleware.auth, Middleware.projectAccessAuth, Project.getInterview);
+router.put('/projects/:id/interviews/:seq', Middleware.auth, Middleware.projectAccessAuth, Project.updateInterview);
 
 router.get('/', (req, res) => {
     res.send('Hello, AppBee Customer!');
