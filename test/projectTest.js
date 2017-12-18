@@ -71,7 +71,6 @@ describe('Project', () => {
                 name: 'descNewImage3',
                 url: '/desc/newimage3'
             }],
-            status: 'temporary',
             owner: {
                 name: 'new혜리',
                 image: {
@@ -101,7 +100,7 @@ describe('Project', () => {
                     project.descriptionImages[1].url.should.be.eql('/desc/newimage2');
                     project.descriptionImages[2].name.should.be.eql('descNewImage3');
                     project.descriptionImages[2].url.should.be.eql('/desc/newimage3');
-                    project.status.should.be.eql('temporary');
+                    project.status.should.be.eql('registered');
                     project.owner.name.should.be.eql('new혜리');
                     project.owner.image.name.should.be.eql('newUrl');
                     project.owner.image.url.should.be.eql('https://newUrl');
@@ -118,6 +117,7 @@ describe('Project', () => {
         it('기존데이터를 업데이트한다', done => {
             let updatingData = myData;
             updatingData.description = '프로젝트 상세 설명 수정';
+            updatingData.status = '';
 
             request.put('/projects/' + myData.projectId)
                 .send(updatingData)

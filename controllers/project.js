@@ -9,14 +9,15 @@ const createProjectJsonFromRequest = (req) => {
     projectJson.description = req.body.description;
     projectJson.descriptionImages = req.body.descriptionImages;
     projectJson.interviews = req.body.interviews;
-    projectJson.status = req.body.status;
     projectJson.owner = req.body.owner;
     projectJson.videoUrl = req.body.videoUrl;
+
     return projectJson;
 };
 
 const registerProject = (req, res) => {
     const newProject = createProjectJsonFromRequest(req);
+    newProject.status = 'registered';
 
     Projects.create(newProject)
         .then(result => res.json({
