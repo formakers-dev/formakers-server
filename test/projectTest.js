@@ -490,30 +490,34 @@ describe('Project', () => {
         });
 
         describe('PUT /projects/:id/interviews/:seq', () => {
+            let clock;
+            const updateInterviewData = {
+                type: '온라인 테스트',
+                introduce: '인터뷰 소개 수정',
+                location: '우면캠퍼스',
+                locationDescription: '수정된 곳으로 오세요',
+                apps: [{
+                    packageName: 'com.kakao.talk',
+                    appName: '카카오톡'
+                }, {
+                    packageName: 'com.nhn.android.search',
+                    appName: '네이버검색'
+                }],
+                openDate: 1512054000000,         //2017-12-01 00:00:00.000 KST
+                closeDate: 1512313199000,        //2017-12-03 23:59:59.999 KST
+                interviewDate: 1512399599000,    //2017-12-04 23:59:59.999 KST
+                timeSlotTimes: [7, 11],
+                emergencyPhone: '010-9999-7777'
+            };
+
             beforeEach((done) => {
+                clock = sandbox.useFakeTimers(new Date("2017-10-29").getTime());
                 Projects.create([myInterviewData, notMyInterviewData], done);
             });
 
             it('기존 인터뷰 데이터를 수정 저장한다', (done) => {
                 request.put('/projects/' + myInterviewData.projectId + '/interviews/2')
-                    .send({
-                        type: '온라인 테스트',
-                        introduce: '인터뷰 소개 수정',
-                        location: '우면캠퍼스',
-                        locationDescription: '수정된 곳으로 오세요',
-                        apps: [{
-                            packageName: 'com.kakao.talk',
-                            appName: '카카오톡'
-                        }, {
-                            packageName: 'com.nhn.android.search',
-                            appName: '네이버검색'
-                        }],
-                        openDate: 1512054000000,         //2017-12-01 00:00:00.000 KST
-                        closeDate: 1512313199000,        //2017-12-03 23:59:59.999 KST
-                        interviewDate: 1512399599000,    //2017-12-04 23:59:59.999 KST
-                        timeSlotTimes: [7, 11],
-                        emergencyPhone: '010-9999-7777'
-                    })
+                    .send(updateInterviewData)
                     .expect(200)
                     .then(() => Projects.findOne({projectId: myInterviewData.projectId}).sort({'interviews.seq': 1}))
                     .then(project => {
@@ -545,11 +549,21 @@ describe('Project', () => {
                     .catch(err => done(err));
             });
 
+            it('인터뷰 모집 시작된 상태에서 저장시 사전 조건 실패 코드(412)를 리턴한다', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
+
+                request.put('/projects/' + myInterviewData.projectId + '/interviews/2')
+                    .send(updateInterviewData)
+                    .expect(412, done);
+            });
 
             it('본인이 작성하지 않은 데이터인 경우 권한 없음 코드(401)를 리턴한다', done => {
                 request.put('/projects/' + notMyInterviewData.projectId + '/interviews/1')
+                    .send(updateInterviewData)
                     .expect(401, done);
             });
+
+            afterEach(() => clock.restore());
         });
 
     });
