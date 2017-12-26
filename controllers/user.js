@@ -8,4 +8,15 @@ const getRegistrationIds = (userList) => {
     });
 };
 
-module.exports = {getRegistrationIds};
+const getUser = (req, res) => {
+    Users.findOne({userId: req.userId}).then(user => {
+        res.json({username: user.name});
+    }).catch(err => send500ErrorJson(err, res));
+};
+
+const send500ErrorJson = (err, res) => {
+    console.log(err);
+    res.status(500).json({error: err});
+};
+
+module.exports = {getRegistrationIds, getUser};
