@@ -19,7 +19,7 @@ describe('AppUsages', () => {
         Users.create(userData, done);
     });
 
-    it('getUsersByPackageNames호출시', (done)=> {
+    it('getRegistrationIds호출시', (done)=> {
         const userIds = ['userId1', 'userId2'];
         getRegistrationIds(userIds).then(result => {
             expect(result).to.have.lengthOf(2);

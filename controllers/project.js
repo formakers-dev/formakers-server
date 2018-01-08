@@ -9,23 +9,21 @@ const createProjectJsonFromRequest = (req) => {
     projectJson.description = req.body.description;
     projectJson.descriptionImages = req.body.descriptionImages;
     projectJson.interviews = req.body.interviews;
-    projectJson.status = req.body.status;
     projectJson.owner = req.body.owner;
     projectJson.videoUrl = req.body.videoUrl;
+
     return projectJson;
 };
 
 const registerProject = (req, res) => {
     const newProject = createProjectJsonFromRequest(req);
+    newProject.status = 'registered';
 
     Projects.create(newProject)
         .then(result => res.json({
             "projectId": result.projectId
         }))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({error: err});
-        });
+        .catch(err => send500ErrorJson(err, res));
 };
 
 const updateProject = (req, res) => {
@@ -33,10 +31,7 @@ const updateProject = (req, res) => {
 
     Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data})
         .then(() => res.sendStatus(200))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({error: err});
-        });
+        .catch(err => send500ErrorJson(err, res));
 };
 
 const getProject = (req, res) => {
@@ -47,7 +42,7 @@ const getProject = (req, res) => {
             .then(project => res.json(project))
             .catch(err => res.status(500).json({error: err}));
     } else {
-        res.sendStatus(500);
+        send500ErrorJson(null, res);
     }
 };
 
@@ -56,45 +51,114 @@ const getAllProjects = (req, res) => {
         .sort({projectId: -1})
         .exec()
         .then(result => res.json(result))
-        .catch(err => res.status(500).json({error: err}));
+        .catch(err => send500ErrorJson(err, res));
 };
 
-const registerInterview = (req, res) => {
-    const newInterview = {};
+function createInterviewJsonFromRequest(req) {
+    const interviewJson = {};
+    interviewJson.type = req.body.type;
+    interviewJson.introduce = req.body.introduce;
+    interviewJson.location = req.body.location;
+    interviewJson.locationDescription = req.body.locationDescription;
+    interviewJson.apps = req.body.apps;
+    interviewJson.interviewDate = req.body.interviewDate;
+    interviewJson.openDate = req.body.openDate;
+    interviewJson.closeDate = req.body.closeDate;
+    interviewJson.emergencyPhone = req.body.emergencyPhone;
+    interviewJson.timeSlot = {};
 
+    const timeSlots = req.body.timeSlotTimes;
+
+    if (timeSlots) {
+        timeSlots.forEach(timeSlotTime => {
+            const id = 'time' + timeSlotTime;
+            interviewJson.timeSlot[id] = '';
+        });
+    }
+
+    return interviewJson;
+}
+
+const registerInterview = (req, res) => {
+    let newInterview;
     Projects.findOne({projectId: req.params.id}).select('interviews').exec()
         .then(project => {
+            newInterview = createInterviewJsonFromRequest(req);
             newInterview.seq = (project && project.interviews) ? project.interviews.length + 1 : 1;
-            newInterview.type = req.body.type;
-            newInterview.introduce = req.body.introduce;
-            newInterview.location = req.body.location;
-            newInterview.locationDescription = req.body.locationDescription;
-            newInterview.apps = req.body.apps;
-            newInterview.interviewDate = req.body.interviewDate;
-            newInterview.openDate = req.body.openDate;
-            newInterview.closeDate = req.body.closeDate;
-            newInterview.emergencyPhone = req.body.emergencyPhone;
             newInterview.totalCount = 5;
-            newInterview.timeSlot = {};
-
-            const timeSlots = req.body.timeSlotTimes;
-
-            if (timeSlots) {
-                timeSlots.forEach(timeSlotTime => {
-                    const id = 'time' + timeSlotTime;
-                    newInterview.timeSlot[id] = '';
-                });
-            }
 
             return Projects.findOneAndUpdate({projectId: req.params.id}, {$push: {"interviews": newInterview}}, {upsert: true}).exec();
         })
         .then(() => res.json({
             "interviewSeq": newInterview.seq
         }))
-        .catch((err) => {
-            console.error(err);
-            res.status(500).json({error: err});
-        });
+        .catch(err => send500ErrorJson(err, res));
 };
 
-module.exports = {registerProject, updateProject, getProject, getAllProjects, registerInterview};
+const getInterview = (req, res) => {
+    Projects.aggregate([
+        {$match: {projectId: parseInt(req.params.id), status: 'registered'}},
+        {$unwind: '$interviews'},
+        {$match: {'interviews.seq': parseInt(req.params.seq)}}
+    ])
+        .then(interviews => {
+            if (!interviews || interviews.length === 0) {
+                res.sendStatus(406);
+            } else {
+                res.json(interviews[0]);
+            }
+        })
+        .catch(err => send500ErrorJson(err, res));
+};
+
+const updateInterview = (req, res) => {
+    const projectId = parseInt(req.params.id);
+    const interviewSeq = parseInt(req.params.seq);
+    const updateInterviewData = createInterviewJsonFromRequest(req);
+
+    Projects.aggregate([
+        {$match: {projectId: projectId, status: 'registered'}},
+        {$unwind: '$interviews'},
+        {$match: {'interviews.seq': interviewSeq}}
+    ])
+        .then(projects => {
+            const interview = projects[0].interviews;
+
+            if(interview.openDate < Date.now()) {
+                res.sendStatus(412);
+            } else {
+                Projects.findOneAndUpdate({projectId: projectId, 'interviews.seq': interviewSeq},
+                    {
+                        'interviews.$.seq': interviewSeq,
+                        'interviews.$.type': updateInterviewData.type,
+                        'interviews.$.introduce': updateInterviewData.introduce,
+                        'interviews.$.location': updateInterviewData.location,
+                        'interviews.$.locationDescription': updateInterviewData.locationDescription,
+                        'interviews.$.apps': updateInterviewData.apps,
+                        'interviews.$.interviewDate': updateInterviewData.interviewDate,
+                        'interviews.$.openDate': updateInterviewData.openDate,
+                        'interviews.$.closeDate': updateInterviewData.closeDate,
+                        'interviews.$.emergencyPhone': updateInterviewData.emergencyPhone,
+                        'interviews.$.timeSlot': updateInterviewData.timeSlot
+                    })
+                    .then(() => res.sendStatus(200))
+                    .catch(err => send500ErrorJson(err, res));
+            }
+        })
+        .catch(err => send500ErrorJson(err, res));
+};
+
+const send500ErrorJson = (err, res) => {
+    console.log(err);
+    res.status(500).json({error: err});
+};
+
+module.exports = {
+    registerProject,
+    updateProject,
+    getProject,
+    getAllProjects,
+    registerInterview,
+    getInterview,
+    updateInterview
+};

@@ -71,7 +71,6 @@ describe('Project', () => {
                 name: 'descNewImage3',
                 url: '/desc/newimage3'
             }],
-            status: 'temporary',
             owner: {
                 name: 'new혜리',
                 image: {
@@ -101,7 +100,7 @@ describe('Project', () => {
                     project.descriptionImages[1].url.should.be.eql('/desc/newimage2');
                     project.descriptionImages[2].name.should.be.eql('descNewImage3');
                     project.descriptionImages[2].url.should.be.eql('/desc/newimage3');
-                    project.status.should.be.eql('temporary');
+                    project.status.should.be.eql('registered');
                     project.owner.name.should.be.eql('new혜리');
                     project.owner.image.name.should.be.eql('newUrl');
                     project.owner.image.url.should.be.eql('https://newUrl');
@@ -118,6 +117,7 @@ describe('Project', () => {
         it('기존데이터를 업데이트한다', done => {
             let updatingData = myData;
             updatingData.description = '프로젝트 상세 설명 수정';
+            updatingData.status = '';
 
             request.put('/projects/' + myData.projectId)
                 .send(updatingData)
@@ -216,94 +216,356 @@ describe('Project', () => {
         });
     });
 
-    describe('POST /projects/{id}/interviews', () => {
-        const testInterviewData = {
-            type: '오프라인 테스트',
-            introduce: '인터뷰 소개',
-            location: '향군타워 5층',
-            locationDescription: '여기서봐요...',
-            apps: [{
-                packageName: 'com.kakao.talk',
-                appName: '카카오톡'
-            }, {
-                packageName: 'com.nhn.android.search',
-                appName: '네이버검색'
-            }],
-            openDate: 1509462000000,         //2017-11-01 00:00:00.000 KST
-            closeDate: 1509634799999,        //2017-11-02 23:59:59.999 KST
-            interviewDate: 1509721199999,    //2017-11-03 23:59:59.999 KST
-            timeSlotTimes: [6, 7, 13],
-            emergencyPhone: '010-1234-5678'
-        };
+    describe('인터뷰 관련 테스트', () => {
+        describe('POST /projects/{id}/interviews', () => {
+            const testInterviewData = {
+                type: '오프라인 테스트',
+                introduce: '인터뷰 소개',
+                location: '향군타워 5층',
+                locationDescription: '여기서봐요...',
+                apps: [{
+                    packageName: 'com.kakao.talk',
+                    appName: '카카오톡'
+                }, {
+                    packageName: 'com.nhn.android.search',
+                    appName: '네이버검색'
+                }],
+                openDate: 1509462000000,         //2017-11-01 00:00:00.000 KST
+                closeDate: 1509634799999,        //2017-11-02 23:59:59.999 KST
+                interviewDate: 1509721199999,    //2017-11-03 23:59:59.999 KST
+                timeSlotTimes: [6, 7, 13],
+                emergencyPhone: '010-1234-5678'
+            };
 
-        it('프로젝트의 인터뷰 정보를 저장한다', done => {
-            request.post('/projects/' + myData.projectId + '/interviews')
-                .send(testInterviewData)
-                .expect(200)
-                .then(res => {
-                    res.body.interviewSeq.should.be.eql(1);
-                    return Projects.findOne({projectId: myData.projectId}).exec();
-                })
-                .then(project => {
-                    project.interviews.length.should.be.eql(1);
-
-                    const interview = project.interviews[0];
-                    interview.seq.should.be.eql(1);
-                    interview.type.should.be.eql('오프라인 테스트');
-                    interview.introduce.should.be.eql('인터뷰 소개');
-                    interview.location.should.be.eql('향군타워 5층');
-                    interview.locationDescription.should.be.eql('여기서봐요...');
-                    interview.apps[0].packageName.should.be.eql('com.kakao.talk');
-                    interview.apps[0].appName.should.be.eql('카카오톡');
-                    interview.apps[1].packageName.should.be.eql('com.nhn.android.search');
-                    interview.apps[1].appName.should.be.eql('네이버검색');
-                    // 한국시간 기준 새벽 0시와 23:59:59:999 세팅
-                    interview.openDate.should.be.eql(new Date('2017-10-31T15:00:00.000Z'));
-                    interview.closeDate.should.be.eql(new Date('2017-11-02T14:59:59.999Z'));
-                    interview.interviewDate.should.be.eql(new Date('2017-11-03T14:59:59.999Z'));
-                    interview.totalCount.should.be.eql(5);
-                    interview.timeSlot.should.be.eql({
-                        'time6': '',
-                        'time7': '',
-                        'time13': ''
-                    });
-                    interview.emergencyPhone.should.be.eql('010-1234-5678');
-
-                    done();
-                })
-                .catch(err => done(err));
-        });
-
-        describe('기존 인터뷰 정보가 존재하는 상황에서', () => {
-            beforeEach(done => {
-                request.post('/projects/' + myData.projectId + '/interviews')
-                    .send(testInterviewData)
-                    .expect(200, done);
-            });
-
-            it('인터뷰 순번이 1만큼 증가되어 정보를 저장한다', done => {
+            it('프로젝트의 인터뷰 정보를 저장한다', done => {
                 request.post('/projects/' + myData.projectId + '/interviews')
                     .send(testInterviewData)
                     .expect(200)
                     .then(res => {
-                        res.body.interviewSeq.should.be.eql(2);
+                        res.body.interviewSeq.should.be.eql(1);
                         return Projects.findOne({projectId: myData.projectId}).exec();
                     })
                     .then(project => {
-                        project.interviews.length.should.be.eql(2);
-                        project.interviews[0].seq.should.be.eql(1);
-                        project.interviews[1].seq.should.be.eql(2);
+                        project.interviews.length.should.be.eql(1);
+
+                        const interview = project.interviews[0];
+                        interview.seq.should.be.eql(1);
+                        interview.type.should.be.eql('오프라인 테스트');
+                        interview.introduce.should.be.eql('인터뷰 소개');
+                        interview.location.should.be.eql('향군타워 5층');
+                        interview.locationDescription.should.be.eql('여기서봐요...');
+                        interview.apps[0].packageName.should.be.eql('com.kakao.talk');
+                        interview.apps[0].appName.should.be.eql('카카오톡');
+                        interview.apps[1].packageName.should.be.eql('com.nhn.android.search');
+                        interview.apps[1].appName.should.be.eql('네이버검색');
+                        // 한국시간 기준 새벽 0시와 23:59:59:999 세팅
+                        interview.openDate.should.be.eql(new Date('2017-10-31T15:00:00.000Z'));
+                        interview.closeDate.should.be.eql(new Date('2017-11-02T14:59:59.999Z'));
+                        interview.interviewDate.should.be.eql(new Date('2017-11-03T14:59:59.999Z'));
+                        interview.totalCount.should.be.eql(5);
+                        interview.timeSlot.should.be.eql({
+                            'time6': '',
+                            'time7': '',
+                            'time13': ''
+                        });
+                        interview.emergencyPhone.should.be.eql('010-1234-5678');
+
                         done();
                     })
                     .catch(err => done(err));
             });
+
+            describe('기존 인터뷰 정보가 존재하는 상황에서', () => {
+                beforeEach(done => {
+                    request.post('/projects/' + myData.projectId + '/interviews')
+                        .send(testInterviewData)
+                        .expect(200, done);
+                });
+
+                it('인터뷰 순번이 1만큼 증가되어 정보를 저장한다', done => {
+                    request.post('/projects/' + myData.projectId + '/interviews')
+                        .send(testInterviewData)
+                        .expect(200)
+                        .then(res => {
+                            res.body.interviewSeq.should.be.eql(2);
+                            return Projects.findOne({projectId: myData.projectId}).exec();
+                        })
+                        .then(project => {
+                            project.interviews.length.should.be.eql(2);
+                            project.interviews[0].seq.should.be.eql(1);
+                            project.interviews[1].seq.should.be.eql(2);
+                            done();
+                        })
+                        .catch(err => done(err));
+                });
+            });
+
+            it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
+                request.post('/projects/' + notMyData.projectId + '/interviews')
+                    .send({})
+                    .expect(401, done);
+            });
         });
 
-        it('본인의 데이터가 아닌 경우 권한 없음 코드(401)를 리턴한다', done => {
-            request.post('/projects/' + notMyData.projectId + '/interviews')
-                .send({})
-                .expect(401, done);
+        const myInterviewData = {
+            projectId: 55555,
+            customerId: config.testCustomerId,
+            name: '인터뷰-조회용-project',
+            introduce: '간단소개',
+            image: {
+                name: 'image1',
+                url: '/image1'
+            },
+            description: '프로젝트 상세 설명',
+            descriptionImages: [{
+                name: 'descImage1',
+                url: '/desc/image1'
+            }, {
+                name: 'descImage2',
+                url: '/desc/image2'
+            }],
+            status: 'registered',
+            owner: {
+                name: '혜리',
+                image: {
+                    name: 'toonImage',
+                    url: 'https://toonStoryUrl'
+                },
+                introduce: '툰스토리 디자이너'
+            },
+            videoUrl: 'www.video.com',
+            interviews: [
+                {
+                    "timeSlot": {
+                        "time6": "",
+                        "time7": "",
+                        "time8": "",
+                        "time9": "",
+                        "time10": ""
+                    },
+                    "totalCount": 5,
+                    "emergencyPhone": "010-119-119",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription": "수원사업장으로 오세요",
+                    "location": "수원 사업장",
+                    "type": "오프라인 인터뷰",
+                    "seq": 1,
+                    "notifiedUserIds": [],
+                    "apps": [
+                        {
+                            "packageName": "com.google.android.gm",
+                            "appName": "Gmail"
+                        }
+                    ]
+                },
+                {
+                    "timeSlot": {
+                        "time11": "",
+                        "time12": "",
+                        "time13": "",
+                        "time14": "",
+                        "time15": ""
+                    },
+                    "totalCount": 5,
+                    "emergencyPhone": "010-119-1192",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription": "수원사업장으로 오세요2",
+                    "location": "수원 사업장2",
+                    "type": "오프라인 인터뷰",
+                    "seq": 2,
+                    "notifiedUserIds": [
+                    ],
+                    "apps": [
+                        {
+                            "packageName": "com.google.android.gm2",
+                            "appName": "Gmail2"
+                        }
+                    ]
+                },
+                {
+                    "timeSlot": {
+                        "time16": "",
+                        "time17": "",
+                        "time18": "",
+                        "time19": "",
+                        "time20": ""
+                    },
+                    "totalCount": 5,
+                    "emergencyPhone": "010-119-1193",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription": "수원사업장으로 오세요3",
+                    "location": "수원 사업장3",
+                    "type": "오프라인 인터뷰",
+                    "seq": 3,
+                    "notifiedUserIds": [],
+                    "apps": [
+                        {
+                            "packageName": "com.google.android.gm3",
+                            "appName": "Gmail3"
+                        }
+                    ]
+                }
+            ],
+        };
+
+        const notMyInterviewData = {
+            projectId: 4564566,
+            customerId: 'someoneId',
+            name: 'not-my-project',
+            interviews: [
+                {
+                    "timeSlot": {
+                        "time6": "",
+                        "time7": "",
+                        "time8": "google110897406327517511196",
+                        "time9": "google112909653374339401399",
+                        "time10": ""
+                    },
+                    "totalCount": 5,
+                    "emergencyPhone": "010-119-119",
+                    "openDate": 1509462000000,         //2017-11-01 00:00:00.000 KST
+                    "closeDate": 1509634799999,        //2017-11-02 23:59:59.999 KST
+                    "interviewDate": 1509721199999,    //2017-11-03 23:59:59.999 KST
+                    "locationDescription": "수원사업장으로 오세요",
+                    "location": "수원 사업장",
+                    "type": "오프라인 인터뷰",
+                    "seq": 1,
+                    "notifiedUserIds": [
+                        "google112909653374339401399",
+                        "112909653374339401399",
+                        "116136954630190256240",
+                        "google116136954630190256240",
+                        "google110997368786962641889",
+                        "google110897406327517511196",
+                        "110897406327517511196",
+                        "109974316241227718963"
+                    ],
+                    "apps": [
+                        {
+                            "packageName": "com.google.android.gm",
+                            "appName": "Gmail"
+                        }
+                    ]
+                }
+            ],
+        };
+
+        describe('GET /projects/:id/interviews/:seq', () => {
+            beforeEach((done) => {
+                Projects.create([myInterviewData, notMyInterviewData], done);
+            });
+
+            it('본인이 작성한 데이터인 경우 해당 프로젝트의 인터뷰 정보를 조회한다', done => {
+                request.get('/projects/' + myInterviewData.projectId + '/interviews/1')
+                    .expect(200)
+                    .then(res => {
+                        res.body.interviews.location.should.be.eql("수원 사업장");
+                        res.body.interviews.locationDescription.should.be.eql("수원사업장으로 오세요");
+                        res.body.interviews.openDate.should.be.eql("2017-10-31T15:00:00.000Z");
+                        res.body.interviews.closeDate.should.be.eql("2017-11-02T14:59:59.999Z");
+                        res.body.interviews.interviewDate.should.be.eql("2017-11-03T14:59:59.999Z");
+                        res.body.interviews.apps[0].packageName.should.be.eql("com.google.android.gm");
+                        res.body.interviews.apps[0].appName.should.be.eql("Gmail");
+                        res.body.interviews.emergencyPhone.should.be.eql("010-119-119");
+                        res.body.interviews.timeSlot.time6.should.be.eql("");
+                        res.body.interviews.timeSlot.time7.should.be.eql("");
+                        res.body.interviews.timeSlot.time8.should.be.eql("");
+                        res.body.interviews.timeSlot.time9.should.be.eql("");
+                        res.body.interviews.timeSlot.time10.should.be.eql("");
+                        res.body.interviews.totalCount.should.be.eql(5);
+                        done();
+                    }).catch(err => done(err));
+            });
+
+            it('본인이 작성하지 않은 데이터인 경우 권한 없음 코드(401)를 리턴한다', done => {
+                request.get('/projects/' + notMyInterviewData.projectId + '/interviews/1')
+                    .expect(401, done);
+            });
         });
+
+        describe('PUT /projects/:id/interviews/:seq', () => {
+            let clock;
+            const updateInterviewData = {
+                type: '온라인 테스트',
+                introduce: '인터뷰 소개 수정',
+                location: '우면캠퍼스',
+                locationDescription: '수정된 곳으로 오세요',
+                apps: [{
+                    packageName: 'com.kakao.talk',
+                    appName: '카카오톡'
+                }, {
+                    packageName: 'com.nhn.android.search',
+                    appName: '네이버검색'
+                }],
+                openDate: 1512054000000,         //2017-12-01 00:00:00.000 KST
+                closeDate: 1512313199000,        //2017-12-03 23:59:59.999 KST
+                interviewDate: 1512399599000,    //2017-12-04 23:59:59.999 KST
+                timeSlotTimes: [7, 11],
+                emergencyPhone: '010-9999-7777'
+            };
+
+            beforeEach((done) => {
+                clock = sandbox.useFakeTimers(new Date("2017-10-29").getTime());
+                Projects.create([myInterviewData, notMyInterviewData], done);
+            });
+
+            it('기존 인터뷰 데이터를 수정 저장한다', (done) => {
+                request.put('/projects/' + myInterviewData.projectId + '/interviews/2')
+                    .send(updateInterviewData)
+                    .expect(200)
+                    .then(() => Projects.findOne({projectId: myInterviewData.projectId}).sort({'interviews.seq': 1}))
+                    .then(project => {
+                        const interview = project.interviews[1];
+                        // immutable data
+                        interview.seq.should.be.eql(2);
+                        interview.totalCount.should.be.eql(5);
+                        interview.notifiedUserIds.should.be.eql([]);
+                        // updated data
+                        interview.type.should.be.eql('온라인 테스트');
+                        interview.introduce.should.be.eql('인터뷰 소개 수정');
+                        interview.location.should.be.eql('우면캠퍼스');
+                        interview.locationDescription.should.be.eql('수정된 곳으로 오세요');
+                        interview.apps.length.should.be.eql(2);
+                        interview.apps[0].packageName.should.be.eql('com.kakao.talk');
+                        interview.apps[0].appName.should.be.eql('카카오톡');
+                        interview.apps[1].packageName.should.be.eql('com.nhn.android.search');
+                        interview.apps[1].appName.should.be.eql('네이버검색');
+                        interview.openDate.should.be.eql(new Date("2017-11-30T15:00:00.000Z"));
+                        interview.closeDate.should.be.eql(new Date("2017-12-03T14:59:59.000Z"));
+                        interview.interviewDate.should.be.eql(new Date("2017-12-04T14:59:59.000Z"));
+                        interview.timeSlot.should.be.eql({
+                            'time7': '',
+                            'time11': ''
+                        });
+                        interview.emergencyPhone.should.be.eql('010-9999-7777');
+                        done();
+                    })
+                    .catch(err => done(err));
+            });
+
+            it('인터뷰 모집 시작된 상태에서 저장시 사전 조건 실패 코드(412)를 리턴한다', done => {
+                clock = sandbox.useFakeTimers(new Date("2017-11-02").getTime());
+
+                request.put('/projects/' + myInterviewData.projectId + '/interviews/2')
+                    .send(updateInterviewData)
+                    .expect(412, done);
+            });
+
+            it('본인이 작성하지 않은 데이터인 경우 권한 없음 코드(401)를 리턴한다', done => {
+                request.put('/projects/' + notMyInterviewData.projectId + '/interviews/1')
+                    .send(updateInterviewData)
+                    .expect(401, done);
+            });
+
+            afterEach(() => clock.restore());
+        });
+
     });
 
     afterEach(done => {

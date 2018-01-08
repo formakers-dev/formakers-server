@@ -19,4 +19,9 @@ const projectAccessAuth = (req, res, next) => {
         }).catch(() => res.sendStatus(401));
 };
 
-module.exports = {auth, projectAccessAuth};
+const getUserId = (req, res, next) => {
+    req.userId = req.user;
+    next();
+};
+
+module.exports = {auth, projectAccessAuth, getUserId};
