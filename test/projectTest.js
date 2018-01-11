@@ -34,6 +34,7 @@ describe('Project', () => {
             url: '/desc/image2'
         }],
         status: 'temporary',
+        interviews: [],
         owner: {
             name: '혜리',
             image: {
@@ -141,6 +142,8 @@ describe('Project', () => {
                     project.owner.image.name.should.be.eql('toonImage');
                     project.owner.image.url.should.be.eql('https://toonStoryUrl');
                     project.owner.introduce.should.be.eql('툰스토리 디자이너');
+
+                    project.interviews.length.should.be.eql(0);
 
                     done();
                 }).catch(err => done(err));

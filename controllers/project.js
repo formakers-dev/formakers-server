@@ -29,7 +29,15 @@ const registerProject = (req, res) => {
 const updateProject = (req, res) => {
     const data = createProjectJsonFromRequest(req);
 
-    Projects.findOneAndUpdate({projectId: req.params.id}, {$set: data})
+    Projects.findOneAndUpdate({projectId: req.params.id}, {
+        'name': data.name,
+        'introduce': data.introduce,
+        'image': data.image,
+        'description': data.description,
+        'descriptionImages': data.descriptionImages,
+        'owner': data.owner,
+        'videoUrl': data.videoUrl
+    })
         .then(() => res.sendStatus(200))
         .catch(err => send500ErrorJson(err, res));
 };
