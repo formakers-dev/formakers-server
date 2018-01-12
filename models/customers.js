@@ -6,7 +6,8 @@ const customersSchema = new Schema({
     provider: String,
     name: String,
     email: String,
-    providerId: String
+    providerId: String,
+    verified: Boolean
 });
 
 module.exports = mongoose.model('customers', customersSchema);

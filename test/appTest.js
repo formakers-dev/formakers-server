@@ -3,8 +3,11 @@ const server = require('../server');
 const request = require('supertest').agent(server);
 const should = chai.should();
 const Apps = require('../models/apps');
+const setupTestMiddleware = require('./setupTestMiddleware');
 
 describe('App', () => {
+    before(done => setupTestMiddleware.setupNormalAuth(server.request, done));
+
     describe('GET /apps', () => {
         const appsData = [{
             appName: 'com.Kakao.1',
@@ -45,7 +48,6 @@ describe('App', () => {
         }];
 
         before(done => {
-            server.request.isAuthenticated = () => true;
             Apps.create(appsData, done);
         });
 
@@ -71,4 +73,6 @@ describe('App', () => {
             Apps.remove({}, done);
         });
     });
+
+    after(done => setupTestMiddleware.clearAuthSetup(done));
 });

@@ -30,6 +30,7 @@ const config = {
             projectId: process.env.FIREBASE_PROJECT_ID,
         },
         testCustomerId: 'googleTestCustomerId',
+        testCustomerName: 'TestCustomer',
         testProjectId: 99999999,
     }
 };

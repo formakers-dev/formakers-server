@@ -4,8 +4,8 @@ const server = require('../server');
 const config = require('../config');
 const request = require('supertest').agent(server);
 const should = chai.should();
-
 const Projects = require('./../models/projects');
+const setupTestMiddleware = require('./setupTestMiddleware');
 
 describe('Project', () => {
     const sandbox = sinon.sandbox.create();
@@ -46,10 +46,9 @@ describe('Project', () => {
         videoUrl: 'www.video.com'
     };
 
-    beforeEach((done) => {
-        server.request.isAuthenticated = () => true;
-        server.request.user.id = config.testCustomerId;
+    before(done => setupTestMiddleware.setupNormalAuth(server.request, done));
 
+    beforeEach((done) => {
         Projects.create([myData, notMyData], () => done());
     });
 
@@ -575,4 +574,6 @@ describe('Project', () => {
         sandbox.restore();
         Projects.remove({}, () => done());
     });
+
+    after(done => setupTestMiddleware.clearAuthSetup(done));
 });
