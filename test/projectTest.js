@@ -48,7 +48,7 @@ describe('Project', () => {
 
     beforeEach((done) => {
         server.request.isAuthenticated = () => true;
-        server.request.user = config.testCustomerId;
+        server.request.user.id = config.testCustomerId;
 
         Projects.create([myData, notMyData], () => done());
     });
