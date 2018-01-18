@@ -2,7 +2,7 @@ const Projects = require('../models/projects');
 
 const createProjectJsonFromRequest = (req) => {
     const projectJson = {};
-    projectJson.customerId = req.user;
+    projectJson.customerId = req.user.id;
     projectJson.name = req.body.name;
     projectJson.introduce = req.body.introduce;
     projectJson.image = req.body.image;
@@ -55,7 +55,7 @@ const getProject = (req, res) => {
 };
 
 const getAllProjects = (req, res) => {
-    Projects.find({customerId: req.user})
+    Projects.find({customerId: req.user.id})
         .sort({projectId: -1})
         .exec()
         .then(result => res.json(result))

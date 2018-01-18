@@ -5,12 +5,15 @@ const Customers = require('../models/customers');
 
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
-    done(null, user.provider + user.id);
+    done(null, {
+        id : user.provider + user.id,
+        name : user.name
+    });
 });
 
 // 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
-passport.deserializeUser(function (userId, done) {
-    done(null, userId);
+passport.deserializeUser(function (user, done) {
+    done(null, user);
 });
 
 passport.use(new GoogleStrategy({
