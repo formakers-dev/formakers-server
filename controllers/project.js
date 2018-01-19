@@ -74,6 +74,7 @@ function createInterviewJsonFromRequest(req) {
     interviewJson.closeDate = req.body.closeDate;
     interviewJson.emergencyPhone = req.body.emergencyPhone;
     interviewJson.timeSlot = {};
+    interviewJson.rewards = req.body.rewards;
 
     const timeSlots = req.body.timeSlotTimes;
 
@@ -147,7 +148,8 @@ const updateInterview = (req, res) => {
                         'interviews.$.openDate': updateInterviewData.openDate,
                         'interviews.$.closeDate': updateInterviewData.closeDate,
                         'interviews.$.emergencyPhone': updateInterviewData.emergencyPhone,
-                        'interviews.$.timeSlot': updateInterviewData.timeSlot
+                        'interviews.$.timeSlot': updateInterviewData.timeSlot,
+                        'interviews.$.rewards': updateInterviewData.rewards,
                     })
                     .then(() => res.sendStatus(200))
                     .catch(err => send500ErrorJson(err, res));
