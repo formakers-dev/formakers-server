@@ -236,7 +236,8 @@ describe('Project', () => {
                 closeDate: 1509634799999,        //2017-11-02 23:59:59.999 KST
                 interviewDate: 1509721199999,    //2017-11-03 23:59:59.999 KST
                 timeSlotTimes: [6, 7, 13],
-                emergencyPhone: '010-1234-5678'
+                emergencyPhone: '010-1234-5678',
+                rewards: '커피 쿠폰 3만원'
             };
 
             it('프로젝트의 인터뷰 정보를 저장한다', done => {
@@ -271,6 +272,7 @@ describe('Project', () => {
                             'time13': ''
                         });
                         interview.emergencyPhone.should.be.eql('010-1234-5678');
+                        interview.rewards.should.be.eql('커피 쿠폰 3만원');
 
                         done();
                     })
@@ -360,7 +362,8 @@ describe('Project', () => {
                             "packageName": "com.google.android.gm",
                             "appName": "Gmail"
                         }
-                    ]
+                    ],
+                    "rewards": "커피 쿠폰 1만원"
                 },
                 {
                     "timeSlot": {
@@ -386,7 +389,8 @@ describe('Project', () => {
                             "packageName": "com.google.android.gm2",
                             "appName": "Gmail2"
                         }
-                    ]
+                    ],
+                    "rewards": "커피 쿠폰 2만원"
                 },
                 {
                     "timeSlot": {
@@ -411,7 +415,8 @@ describe('Project', () => {
                             "packageName": "com.google.android.gm3",
                             "appName": "Gmail3"
                         }
-                    ]
+                    ],
+                    "rewards": "커피 쿠폰 3만원"
                 }
             ],
         };
@@ -453,7 +458,8 @@ describe('Project', () => {
                             "packageName": "com.google.android.gm",
                             "appName": "Gmail"
                         }
-                    ]
+                    ],
+                    "rewards": "커피 쿠폰 4만원"
                 }
             ],
         };
@@ -481,6 +487,7 @@ describe('Project', () => {
                         res.body.interviews.timeSlot.time9.should.be.eql("");
                         res.body.interviews.timeSlot.time10.should.be.eql("");
                         res.body.interviews.totalCount.should.be.eql(5);
+                        res.body.interviews.rewards.should.be.eql('커피 쿠폰 1만원');
                         done();
                     }).catch(err => done(err));
             });
@@ -509,7 +516,8 @@ describe('Project', () => {
                 closeDate: 1512313199000,        //2017-12-03 23:59:59.999 KST
                 interviewDate: 1512399599000,    //2017-12-04 23:59:59.999 KST
                 timeSlotTimes: [7, 11],
-                emergencyPhone: '010-9999-7777'
+                emergencyPhone: '010-9999-7777',
+                rewards: '커피 쿠폰 10만원',
             };
 
             beforeEach((done) => {
@@ -546,6 +554,7 @@ describe('Project', () => {
                             'time11': ''
                         });
                         interview.emergencyPhone.should.be.eql('010-9999-7777');
+                        interview.rewards.should.be.eql('커피 쿠폰 10만원');
                         done();
                     })
                     .catch(err => done(err));

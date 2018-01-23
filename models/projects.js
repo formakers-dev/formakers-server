@@ -27,6 +27,7 @@ const interviewSchema = new Schema({
     timeSlot: Object,
     emergencyPhone: String,
     notifiedUserIds: Array,
+    rewards: String,
 });
 
 const projectSchema = new Schema({
