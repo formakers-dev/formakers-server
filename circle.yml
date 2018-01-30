@@ -12,4 +12,4 @@ deployment:
   staging:
     branch: master
     heroku:
-      appname: dragonserver
+      appname: dragonserver-release
