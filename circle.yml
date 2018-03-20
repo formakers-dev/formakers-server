@@ -9,7 +9,7 @@ dependencies:
     - ~/.npm
 
 deployment:
-  staging:
+  development:
     branch: master
     heroku:
-      appname: dragonserver
+      appname: dragonserver-dev
