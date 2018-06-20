@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Email = require('../controllers/email');
+const Landing = require('../controllers/landing');
 const Middleware = require('../middlewares/middleware');
 const Auth = require('../controllers/auth');
 const Apps = require('../controllers/app');
 const Project = require('../controllers/project');
 
 // landing (don't have to auth)
+router.get('/notices', Landing.getNotices);
 router.post('/email', Email.save);
 
 // login
