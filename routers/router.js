@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const Middleware = require('../middlewares/middleware');
-const AuthController = require('../controllers/auth');
-const AppsController = require('../controllers/app');
 const Email = require('../controllers/email');
+const Middleware = require('../middlewares/middleware');
+const Auth = require('../controllers/auth');
+const Apps = require('../controllers/app');
 const Project = require('../controllers/project');
 
-router.get('/auth/google', AuthController.googleAuth);
-router.get('/auth/google/callback', AuthController.googleAuthCallback);
-router.get('/auth/login_success', AuthController.loginSuccess);
-router.get('/auth/login_fail', AuthController.loginFail);
-router.get('/auth/logout', Middleware.auth, AuthController.logout);
+// landing (don't have to auth)
+router.post('/email', Email.save);
+
+// login
+router.get('/auth/google', Auth.googleAuth);
+router.get('/auth/google/callback', Auth.googleAuthCallback);
+router.get('/auth/login_success', Auth.loginSuccess);
+router.get('/auth/login_fail', Auth.loginFail);
+router.get('/auth/logout', Middleware.auth, Auth.logout);
 router.get('/auth/check_login', Middleware.auth, (req, res) => res.json({username: req.user.name}));
 
-router.get('/apps', Middleware.auth, AppsController.getApps);
-
-router.post('/email', Email.save);
+router.get('/apps', Middleware.auth, Apps.getApps);
 
 router.get('/projects', Middleware.auth, Project.getAllProjects);
 router.post('/projects', Middleware.auth, Project.registerProject);
