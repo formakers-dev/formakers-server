@@ -9,6 +9,10 @@ dependencies:
     - ~/.npm
 
 deployment:
+  development:
+    branch: master
+    heroku:
+      appname: dragonserver-dev
   staging:
     branch: release
     heroku:
