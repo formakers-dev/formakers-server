@@ -1,10 +1,10 @@
 {
   "name": "server-dragon",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "export NODE_ENV=development && node server.js",
+    "start": "node server.js",
     "test": "export NODE_ENV=test && nyc mocha --timeout 5000"
   },
   "author": "",
