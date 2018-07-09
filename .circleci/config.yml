@@ -7,7 +7,7 @@
 version: 2
 jobs:
   build: # runs not using Workflows must have a `build` job as entry point
-    working_directory: ~/dragonwebapp # directory where steps will run
+    working_directory: ~/dragonserver # directory where steps will run
     docker: # run the steps with Docker
       - image: circleci/node:8.11
       # Specify service dependencies here if necessary
@@ -52,7 +52,7 @@ jobs:
   dev-deploy:
     machine:
         enable: true
-    working_directory: ~/dragonwebapp
+    working_directory: ~/dragonserver
     environment:
       - HEROKU_APP : dragonserver-dev
     steps:
@@ -71,7 +71,7 @@ jobs:
   deploy:
     machine:
         enable: true
-    working_directory: ~/dragonwebapp
+    working_directory: ~/dragonserver
     environment:
       - HEROKU_APP : dragonserver-release
     steps:
