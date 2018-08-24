@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
+const morgan = require('morgan');
 const port = require('./config').port;
 const passport = require('passport');
 const config = require('./config');
@@ -15,6 +16,8 @@ app.use(bodyParser.urlencoded({
     limit: '10mb',
     extended: true
 }));
+
+app.use(morgan('combined'));
 
 app.use(session({secret: 'appbeeSecret',
     saveUninitialized: true,
