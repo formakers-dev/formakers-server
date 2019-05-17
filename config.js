@@ -14,6 +14,9 @@ config.development = {
         apiKey: process.env.FIREBASE_API_KEY,
         databaseURL: process.env.FIREBASE_DATABASE_URL,
         projectId: process.env.FIREBASE_PROJECT_ID,
+    },
+    web: {
+        cors: true
     }
 };
 
@@ -37,6 +40,7 @@ config.test = {
     testCustomerId: 'googleTestCustomerId',
     testCustomerName: 'TestCustomer',
     testProjectId: 99999999,
+    web: {}
 };
 
 module.exports = config[process.env.NODE_ENV];

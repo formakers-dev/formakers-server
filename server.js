@@ -11,6 +11,16 @@ const config = require('./config');
 
 require('./db').init();
 
+const corsOptions = {
+    origin: config.frontendBaseUrl,
+    credentials: true
+};
+
+if (config.web.cors) {
+    app.use(cors(corsOptions));
+    app.options(config.frontendBaseUrl, cors(corsOptions));
+}
+
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({
     limit: '10mb',
@@ -29,7 +39,6 @@ app.use(session({secret: 'appbeeSecret',
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({origin: config.frontendBaseUrl, credentials: true}));
 app.use('/', require('./routers/router'));
 
 http.createServer(app).listen(port, function () {
