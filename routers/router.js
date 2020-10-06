@@ -31,7 +31,7 @@ router.get('/projects/:id/interviews/:seq', Middleware.auth, Middleware.projectA
 router.put('/projects/:id/interviews/:seq', Middleware.auth, Middleware.projectAccessAuth, Project.updateInterview);
 
 router.get('/', (req, res) => {
-    res.send('Hello, AppBee Customer! (' + process.env.NODE_ENV + ' v' + packagejson.version + ')');
+    res.send('Hello, Plan B Customer! (' + process.env.NODE_ENV + ' v' + packagejson.version + ')');
 });
 
 module.exports = router;
