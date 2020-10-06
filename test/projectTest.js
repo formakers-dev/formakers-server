@@ -7,7 +7,7 @@ const should = chai.should();
 const Projects = require('./../models/projects');
 const setupTestMiddleware = require('./setupTestMiddleware');
 
-describe('Project', () => {
+describe.skip('Project', () => {
     const sandbox = sinon.sandbox.create();
 
     const notMyData = {
