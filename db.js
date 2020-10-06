@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
 const config = require('./config');
 
 const connect = () => {
@@ -10,7 +9,6 @@ const connect = () => {
             console.log('mongodb connected');
         }
     });
-    autoIncrement.initialize(connection);
 };
 
 const setRecoverConfig = () => {
