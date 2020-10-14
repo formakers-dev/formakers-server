@@ -10,34 +10,22 @@ module.exports = ({ gender, ageGroup, playStyle, payStyle }) => {
 	if (ageGroup.length && !ageGroup.includes("all")) {
 		const ageQuery = [];
 		const currentYear = new Date().getFullYear();
-		const setBirthdayRange = (gte, lte) => {
+		const setBirthdayRange = ([gte, lte]) => {
 			ageQuery.push({ "birthday": { "$gte": currentYear - gte, "$lte": currentYear - lte } });
 		}
 
+		const ageRange = {
+			"under10": [9, 0],
+			"10s": [19, 10],
+			"20s": [29, 20],
+			"30s": [39, 30],
+			"40s": [49, 40],
+			"50s": [59, 50],
+			"over60": [200, 60]
+		}
+
 		ageGroup.forEach(group => {
-			switch (group) {
-				case "under10":
-					setBirthdayRange(9, 0);
-					break;
-				case "10s":
-					setBirthdayRange(19, 10);
-					break;
-				case "20s":
-					setBirthdayRange(29, 20);
-					break;
-				case "30s":
-					setBirthdayRange(39, 30);
-					break;
-				case "40s":
-					setBirthdayRange(49, 40);
-					break;
-				case "50s":
-					setBirthdayRange(59, 50);
-					break;
-				case "over60":
-					setBirthdayRange(69, 150);
-					break;
-			}
+			setBirthdayRange(ageRange[group]);
 		});
 
 		formattedReqBody["$or"] = ageQuery;
