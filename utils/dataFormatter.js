@@ -44,22 +44,28 @@ module.exports = ({ gender, ageGroup, playStyle, payStyle }) => {
 	}
 
 	// playStyle 필드 -> platforms, genres로 나누기
-	const platforms = ["pc", "mobile", "console"];
 	if (playStyle.length && !playStyle.includes("all")) {
-		playStyle.forEach(style => {
-			if (platforms.includes(style)) {
-				formattedReqBody.favoritePlatforms.push(style);
-			} else {
-				formattedReqBody.favoriteGenres.push(style);
+		const platformFields = ["pc", "mobile", "console"];
+		const platforms = playStyle.filter(style => platformFields.includes(style));
+
+		// platforms 옵션이 포함된 경우
+		if (platforms.length) {
+			formattedReqBody.favoritePlatforms = { "$all": platforms };
+			if (playStyle.length > platforms.length) {
+				const genres = playStyle.filter(style => !platformFields.includes(style));
+				formattedReqBody.favoriteGenres = { "$all": genres };
 			}
-		});
+		} else {
+			// platforms 옵션은 없고 && genres만 있는 경우
+			formattedReqBody.favoriteGenres = { "$all": playStyle };
+		}
 	}
 
 	// payStyle 필드 -> 과금유저, 무과금유저로 나누기
 	if (payStyle.length === 1) {
-		if (payStyle === ["free"]) {
+		if (payStyle[0] === "free") {
 			formattedReqBody.monthlyPayment = 0;
-		} else {
+		} else if (payStyle[0] === "pay") {
 			formattedReqBody.monthlyPayment = { "$gt": 0 };
 		}
 	}
