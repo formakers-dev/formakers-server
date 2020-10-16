@@ -2,8 +2,8 @@ module.exports = ({ gender, ageGroup, playStyle, payStyle }) => {
 	const formattedReqBody = {};
 
 	// gender 필드 -> "무관"이 아닌 경우 쿼리 설정
-	if (gender.length && !gender.includes("all")) {
-		formattedReqBody.gender = gender;
+	if (gender.length === 1 && !gender.includes("all")) {
+		formattedReqBody.gender = gender[0];
 	}
 
 	// ageGroup 필드 -> birthday range 설정
@@ -11,7 +11,7 @@ module.exports = ({ gender, ageGroup, playStyle, payStyle }) => {
 		const ageQuery = [];
 		const currentYear = new Date().getFullYear();
 		const setBirthdayRange = ([gte, lte]) => {
-			ageQuery.push({ "birthday": { "$gte": currentYear - gte, "$lte": currentYear - lte } });
+			ageQuery.push({ "birthday": { $gte: currentYear - gte, $lte: currentYear - lte } });
 		}
 
 		const ageRange = {
