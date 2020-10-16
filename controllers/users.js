@@ -7,9 +7,35 @@ const User = require('../models/users');
 // @access     Public
 exports.searchUsers = asyncHandler(async(req, res, next) => {
   const formattedReqBody = dataFormatter(req.body);
-  // const users = await User.find(req.body);
 
-  const users = await User.find(formattedReqBody);
+  const users = await User.aggregate([
+    {
+      $match: formattedReqBody
+    },
+    {
+      $lookup: {
+        from: "app-usages",
+        let: { id: "$userId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$$id", "$userId"] }
+                ]
+              }
+            }
+          },
+          {
+            $group: {
+              _id: "$userId",
+              totalUsedTime: {$sum: "$totalUsedTime"}
+            }
+        }],
+        as: "totalPlayTime"
+      }
+    }
+  ]);
 
   res.status(200).json({
     count: users.length,
