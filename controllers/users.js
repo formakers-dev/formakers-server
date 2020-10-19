@@ -3,7 +3,7 @@ const dataFormatter = require('../utils/dataFormatter');
 const User = require('../models/users');
 
 // @desc       Search users
-// @route      POST /api/users/search
+// @route      POST /users/search
 // @access     Public
 exports.searchUsers = asyncHandler(async(req, res, next) => {
   const formattedReqBody = dataFormatter(req.body);
