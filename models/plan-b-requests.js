@@ -14,6 +14,7 @@ const requestSchema = new mongoose.Schema({
 	},
 	interests: [String],
 	selectedUsers: Array,
+	selectedOptions: Array,
 	createdAt: {
 		type: Date,
 		default: Date.now()
