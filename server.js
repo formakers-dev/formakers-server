@@ -39,7 +39,10 @@ app.use(session({secret: 'appbeeSecret',
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/', require('./routers/router'));
+
+app.use('/', require('./routers'));
+app.use('/users', require('./routers/users'));
+app.use('/requests', require('./routers/requests'));
 
 http.createServer(app).listen(port, function () {
     console.log('Express server listening on port ' + port);

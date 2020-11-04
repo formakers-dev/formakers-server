@@ -7,7 +7,7 @@ const should = chai.should();
 const firebase = require('firebase');
 const firebaseConfig = config.firebase;
 
-describe('Email', () => {
+describe.skip('Email', () => {
     describe('POST /email', () => {
         it('이메일 저장을 완료하면 true를 리턴한다', done => {
             request.post('/email')

@@ -88,15 +88,15 @@ workflows:
             - build
           filters:
             branches:
-              only:
-                - master
+              ignore:
+                - release
       - stg-deploy:
           requires:
             - build
           filters:
             branches:
               only:
-                - release
+                - master
       - deploy:
           requires:
             - build

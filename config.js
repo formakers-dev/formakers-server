@@ -17,7 +17,8 @@ config.development = {
     },
     web: {
         cors: true
-    }
+    },
+    slackApiToken: process.env.SLACK_API_TOKEN
 };
 
 config.staging = config.development;
