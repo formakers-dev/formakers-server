@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const imageSchema = new Schema({
@@ -44,6 +44,7 @@ const projectSchema = new Schema({
     videoUrl: String,
 });
 
-projectSchema.plugin(autoIncrement.plugin, {model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1});
+// projectSchema.plugin(AutoIncrement, {model: 'projects', field: 'projectId', startAt: 1, incrementBy: 1});
+projectSchema.plugin(AutoIncrement, {inc_field: 'projectId'});
 
 module.exports = mongoose.model('projects', projectSchema);
