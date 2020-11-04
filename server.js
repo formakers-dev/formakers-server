@@ -12,13 +12,13 @@ const config = require('./config');
 require('./db').init();
 
 const corsOptions = {
-    origin: config.frontendBaseUrl,
+    origin: '*', // config.frontendBaseUrl,
     credentials: true
 };
 
 if (config.web.cors) {
     app.use(cors(corsOptions));
-    app.options(config.frontendBaseUrl, cors(corsOptions));
+    app.options('*', cors(corsOptions));
 }
 
 app.use(bodyParser.json({limit: '10mb'}));
