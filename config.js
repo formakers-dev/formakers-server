@@ -18,11 +18,15 @@ config.development = {
     web: {
         cors: true
     },
-    slackApiToken: process.env.SLACK_API_TOKEN
+    slackApiToken: process.env.SLACK_API_TOKEN,
+    slackChannel: 'dev-test'
 };
 
 config.staging = config.development;
-config.production = config.development;
+config.production = {
+    ...config.development,
+    slackChannel: '_general'
+};
 
 config.test = {
     baseUrl: 'http://localhost:8081',

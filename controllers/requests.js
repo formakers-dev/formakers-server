@@ -34,7 +34,7 @@ exports.createRequest = asyncHandler(async(req, res, next) => {
 
 	web.chat.postMessage({
 		text,
-		channel: 'dev-test',
+		channel: config.slackChannel,
 		as_user: true
 	});
 
