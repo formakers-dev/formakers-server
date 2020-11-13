@@ -1,47 +1,82 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const jwt = require('jsonwebtoken');
+const Customer = require('../models/customers');
 const config = require('../config');
-const Customers = require('../models/customers');
 
-// 인증후 사용자 정보를 세션에 저장
-passport.serializeUser(function (user, done) {
-    done(null, {
-        id : user.provider + user.id,
-        name : user.name
-    });
-});
+const sendToken = (customer, statusCode, res) => {
+	// 토큰 생성
+	const token = jwt.sign({ id: customer._id }, config.jwtSecret, {
+		expiresIn: config.jwtExpiresIn
+	});
 
-// 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
-passport.deserializeUser(function (user, done) {
-    done(null, user);
-});
+	res.setHeader('Authorization', token);
 
-passport.use(new GoogleStrategy({
-    clientID: config.google_client_id,
-    clientSecret: config.google_client_secret,
-    callbackURL: config.baseUrl + "/auth/google/callback"
-}, function (accessToken, refreshToken, profile, done) {
-    const customer = {};
-    customer.id = profile.provider + profile.id;
-    customer.provider = profile.provider;
-    customer.providerId = profile.id;
-    customer.name = profile.displayName;
-    customer.email = (profile.emails)? profile.emails[0].value : "";
+	res.sendStatus(statusCode);
+}
 
-    Customers.findOneAndUpdate({ id : customer.id }, { $set : customer }, { upsert : true })
-        .exec()
-        .then(() => done(null, profile))
-        .catch((err) => done(err));
-}));
+// @desc        Customer 회원가입
+// @route       POST /auth/sign-up
+// @access      Public
+exports.signUp = async (req, res, next) => {
+	const { email, password, companyName } = req.body;
 
-const googleAuth = passport.authenticate('google', {scope: ['email', 'profile']});
-const googleAuthCallback = passport.authenticate('google', {successRedirect: '/auth/login_success', failureRedirect: '/auth/login_fail'});
-const loginSuccess = (req, res) => res.redirect(config.frontendBaseUrl);
-const loginFail = (req, res) => res.redirect(config.frontendBaseUrl);
+	if (!(email && password && companyName)) {
+		return res.status(400).json({ error: '이메일, 비밀번호, 회사이름을 모두 입력해주세요.' });
+	}
 
-const logout = (req, res) => {
-    req.logout();
-    res.sendStatus(200);
-};
+	try {
+		const customer = await Customer.create({
+			email,
+			password,
+			companyName
+		});
 
-module.exports = {googleAuth, googleAuthCallback, loginSuccess, loginFail, logout};
+		res.status(201).json(customer);
+	} catch (err) {
+		console.error(err);
+
+		if (err.name === 'ValidationError') {
+			return res.status(400).json({ error: '올바른 이메일 주소를 입력해주세요.' });
+		} else if (err.code === 11000) {
+			return res.status(400).json({ error: '이미 가입된 계정입니다.' });
+		} else if (err.errors.password.kind === 'minlength') {
+			return res.status(400).json({ error: '비밀번호를 6자 이상으로 설정해주세요.' });
+		}
+
+		res.status(500).json({ error: err.message });
+	}
+}
+
+// @desc        Customer 로그인
+// @route       POST /auth/login
+// @access      Public
+exports.login = async (req, res, next) => {
+	const { email, password } = req.body;
+
+	if (!email || !password) {
+		return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
+	}
+
+	try {
+		const customer = await Customer.findOne({email});
+
+		if (!customer) {
+			return res.status(401).json({ error: '계정정보가 존재하지 않습니다.' });
+		} else if (!await customer.comparePassword(password)) {
+			return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
+		}
+
+		sendToken(customer, 200, res);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: err.message });
+	}
+}
+
+// @desc        Customer 로그아웃
+// @route       POST /auth/logout
+// @access      Private
+exports.logout = (req, res, next) => {
+	res.clearCookie('access_token');
+	res.removeHeader('Authorization');
+	return res.sendStatus(204);
+}
