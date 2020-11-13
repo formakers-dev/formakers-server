@@ -19,7 +19,9 @@ config.development = {
         cors: true
     },
     slackApiToken: process.env.SLACK_API_TOKEN,
-    slackChannel: 'dev-test'
+    slackChannel: 'dev-test',
+    jwtSecret: process.env.JWT_SECRET,
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN,
 };
 
 config.staging = config.development;
