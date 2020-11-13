@@ -5,8 +5,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 const morgan = require('morgan');
+
 const port = require('./config').port;
-const passport = require('passport');
 const config = require('./config');
 
 require('./db').init();
@@ -37,12 +37,11 @@ app.use(session({secret: 'appbeeSecret',
     }
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use('/', require('./routers'));
+// ===== Router =====
+// app.use('/', require('./routers'));
 app.use('/users', require('./routers/users'));
 app.use('/requests', require('./routers/requests'));
+app.use('/auth', require('./routers/auth'));
 
 http.createServer(app).listen(port, function () {
     console.log('Express server listening on port ' + port);
