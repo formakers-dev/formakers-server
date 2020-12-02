@@ -1,45 +1,110 @@
 const chai = require('chai');
 const should = chai.should();
+const bcrypt = require('bcryptjs');
 const server = require('../server');
 const request = require('supertest').agent(server);
 const config = require('../config');
+const Customers = require('../models/customers');
 const setupTestMiddleware = require('./setupTestMiddleware');
 
-describe('Middleware', () => {
-    describe('GET /auth/check_login', () => {
-        describe('로그인된 상태에서 호출 시', () => {
-            beforeEach(done => setupTestMiddleware.setupNormalAuth(server.request, done));
+describe('Auth', () => {
+	describe('POST /auth/sign-up', () => {
+		it('유저가 전달한 유저정보로 회원가입이 정상적으로 이루어진다', done => {
+			const reqBody = {
+				email: 'fomes@formakers.net',
+				password: 'test11',
+				companyName: 'ForMakers'
+			};
 
-            it('로그인 된 사용자의 이름을 리턴한다', done => {
-                request.get('/auth/check_login')
-                    .expect(200)
-                    .then(res => {
-                        res.body.username.should.be.eql(config.testCustomerName);
-                        done();
-                    }).catch(err => done(err));
-            });
+			request.post('/auth/sign-up')
+				.send(reqBody)
+				.expect(201)
+				.then(res => {
+					res.body.email.should.be.eql('fomes@formakers.net');
+					res.body.companyName.should.be.eql('ForMakers');
 
-            afterEach(done => setupTestMiddleware.clearAuthSetup(done));
-        });
+					return Customers.findOne({email: reqBody.email});
+				})
+				.then(user => {
+					if (user) {
+						user.email.should.be.eql('fomes@formakers.net');
+						user.companyName.should.be.eql('ForMakers');
+						// user.signUpDate.should.be.eql(new Date('2020-12-02'));
+						const pw = bcrypt.compareSync(reqBody.password, user.password);
+						pw.should.be.true;
 
-        describe('요청한 사용자가 인가되지 않은 사용자일 경우', () => {
-            beforeEach(done => setupTestMiddleware.setupUnauthorizedAuth(server.request, done));
+						done();
+					} else {
+						return Promise.reject("User is not Exist!");
+					}
+				})
+				.catch(err => done(err));
 
-            it('인가되지 않은 에러코드(403)을 리턴한다', done => {
-                request.get('/auth/check_login').expect(403, done);
-            });
+		});
 
-            afterEach(done => setupTestMiddleware.clearAuthSetup(done));
-        });
+		it('유저가 전달한 이메일 주소 형식이 올바르지 않으면 412을 리턴한다', done => {
+			const reqBody = {
+				email: 'fomes@formakers',
+				password: 'test11',
+				companyName: 'ForMakers'
+			};
 
-        describe('로그인되지 않은 상태에서 호출 시', () => {
-            beforeEach(done => setupTestMiddleware.setupNotLoggedInAuth(server.request, done));
+			request.post('/auth/sign-up')
+				.send(reqBody)
+				.expect(412)
+				.then(res => {
+					res.body.error.should.be.eql('올바른 이메일 주소를 입력해주세요.');
+					done();
+				})
+				.catch(err => done(err));
+		});
 
-            it('로그인 되지 않은 상태에서는 401을 리턴한다', done => {
-                request.get('/auth/check_login').expect(401, done);
-            });
+		describe('유저가 전달한 이메일 주소로 이미 가입된 계정이 있는 경우', () => {
+			const reqBody = {
+				email: 'fomes@formakers.net',
+				password: 'test11',
+				companyName: 'ForMakers'
+			};
 
-            afterEach(done => setupTestMiddleware.clearAuthSetup(done));
-        });
-    });
+			beforeEach(done => {
+				Customers.create(reqBody)
+					.then(() => done())
+					.catch(err => done(err));
+			});
+
+			it('409을 리턴한다', done => {
+				request.post('/auth/sign-up')
+					.send(reqBody)
+					.expect(409)
+					.then(res => {
+						res.body.error.should.be.eql('이미 가입된 계정입니다.');
+						done();
+					})
+					.catch(err => done(err));
+			});
+		});
+
+		it('유저가 전달한 비밀번호가 6자 미만일 경우 412를 리턴한다', done => {
+			const reqBody = {
+				email: 'fomes@formakers.net',
+				password: 'test',
+				companyName: 'ForMakers'
+			};
+
+			request.post('/auth/sign-up')
+				.send(reqBody)
+				.expect(412)
+				.then(res => {
+					res.body.error.should.be.eql('비밀번호를 6자 이상으로 설정해주세요.');
+					done();
+				})
+				.catch(err => done(err));
+		});
+
+		afterEach(done => {
+			Customers.remove({})
+				.then(() => done())
+				.catch(err => done(err));
+		});
+	});
 });

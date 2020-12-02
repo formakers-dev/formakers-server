@@ -30,16 +30,20 @@ exports.signUp = async (req, res, next) => {
 			companyName
 		});
 
+		delete customer.password;
+
 		res.status(201).json(customer);
 	} catch (err) {
 		console.error(err);
 
 		if (err.name === 'ValidationError') {
-			return res.status(400).json({ error: '올바른 이메일 주소를 입력해주세요.' });
+			if (err.errors.password && err.errors.password.kind === 'minlength') {
+				return res.status(412).json({ error: '비밀번호를 6자 이상으로 설정해주세요.' });
+			} else {
+				return res.status(412).json({error: '올바른 이메일 주소를 입력해주세요.'});
+			}
 		} else if (err.code === 11000) {
-			return res.status(400).json({ error: '이미 가입된 계정입니다.' });
-		} else if (err.errors.password.kind === 'minlength') {
-			return res.status(400).json({ error: '비밀번호를 6자 이상으로 설정해주세요.' });
+			return res.status(409).json({ error: '이미 가입된 계정입니다.' });
 		}
 
 		res.status(500).json({ error: err.message });

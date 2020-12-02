@@ -5,7 +5,7 @@ const should = chai.should();
 const Apps = require('../models/apps');
 const setupTestMiddleware = require('./setupTestMiddleware');
 
-describe('App', () => {
+describe.skip('App', () => {
     before(done => setupTestMiddleware.setupNormalAuth(server.request, done));
 
     describe('GET /apps', () => {
