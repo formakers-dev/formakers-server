@@ -20,8 +20,10 @@ config.development = {
     },
     slackApiToken: process.env.SLACK_API_TOKEN,
     slackChannel: 'dev-test',
-    jwtSecret: process.env.JWT_SECRET,
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    }
 };
 
 config.staging = config.development;
@@ -47,7 +49,11 @@ config.test = {
     testCustomerId: 'googleTestCustomerId',
     testCustomerName: 'TestCustomer',
     testProjectId: 99999999,
-    web: {}
+    web: {},
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    }
 };
 
 module.exports = config[process.env.NODE_ENV];

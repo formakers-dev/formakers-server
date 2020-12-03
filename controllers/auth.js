@@ -2,15 +2,11 @@ const jwt = require('jsonwebtoken');
 const Customer = require('../models/customers');
 const config = require('../config');
 
-const sendToken = (customer, statusCode, res) => {
-	// 토큰 생성
-	const token = jwt.sign({ id: customer._id }, config.jwtSecret, {
-		expiresIn: config.jwtExpiresIn
-	});
-
-	res.setHeader('Authorization', token);
-
-	res.sendStatus(statusCode);
+const generateToken = (customerId) => {
+	return jwt.sign(
+		{ id: customerId },
+		config.jwt.secret,
+		{ expiresIn: config.jwt.expiresIn });
 }
 
 // @desc        Customer 회원가입
@@ -69,7 +65,10 @@ exports.login = async (req, res, next) => {
 			return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
 		}
 
-		sendToken(customer, 200, res);
+		const token = generateToken(customer._id);
+
+		res.setHeader('Authorization', token);
+		res.sendStatus(200);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: err.message });

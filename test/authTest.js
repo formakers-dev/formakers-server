@@ -107,4 +107,52 @@ describe('Auth', () => {
 				.catch(err => done(err));
 		});
 	});
+
+	describe('POST /auth/login', () => {
+		beforeEach(done => {
+			const user = {
+				email: 'fomes@formakers.net',
+				password: 'test11',
+				companyName: 'ForMakers'
+			};
+
+			Customers.create(user)
+				.then(() => done())
+				.catch(err => done(err));
+		});
+
+		it('유저가 올바른 이메일과 비밀번호를 전달하면 로그인이 이루어진다', done => {
+			const reqBody = {
+				email: 'fomes@formakers.net',
+				password: 'test11'
+			};
+
+			request.post('/auth/login')
+				.send(reqBody)
+				.expect(200)
+				.then(res => {
+					should.exist(res.headers.authorization);
+					done();
+				})
+				.catch(err => done(err));
+		});
+
+		it('유저가 필수 필드값을 전달하지 않으면 400을 리턴한다', done => {
+
+		});
+
+		it('존재하지 않는 유저일 경우 401을 리턴한다', done => {
+
+		});
+
+		it('비밀번호가 일치하지 않을 경우 401을 리턴한다', done => {
+
+		});
+
+		afterEach(done => {
+			Customers.remove({})
+				.then(() => done())
+				.catch(err => done(err));
+		});
+	});
 });
