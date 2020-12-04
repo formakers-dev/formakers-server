@@ -3,4 +3,6 @@ node_modules/
 package-lock.json
 .pairs
 npm-debug.log
-.nyc_output/
+.nyc_output
+*.orig
+*.rej
