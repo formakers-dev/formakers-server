@@ -66,7 +66,7 @@ exports.login = async (req, res, next) => {
 			return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
 		}
 
-		const token = generateToken(customer._id);
+		const token = generateToken(customer._id.toString());
 
 		res.setHeader('Authorization', token);
 		res.sendStatus(200);

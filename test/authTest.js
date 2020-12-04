@@ -6,6 +6,7 @@ const request = require('supertest').agent(server);
 const config = require('../config');
 const Customers = require('../models/customers');
 const setupTestMiddleware = require('./setupTestMiddleware');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 describe('Auth', () => {
 	describe('POST /auth/sign-up', () => {
@@ -184,6 +185,72 @@ describe('Auth', () => {
 		afterEach(done => {
 			Customers.remove({})
 				.then(() => done())
+				.catch(err => done(err));
+		});
+	});
+
+	describe('POST /auth/logout', () => {
+		beforeEach(done => {
+			Customers.create({
+				_id: ObjectId(config.testUser._id),
+				email: config.testUser.email,
+				password: config.testUser.password,
+				companyName: config.testUser.companyName,
+			})
+				.then(() => done())
+				.catch(err => done(err));
+		});
+
+		it('유저가 로그아웃을 요청하면 인증 관련 필드값들이 삭제되고 204를 리턴한다', done => {
+			request.post('/auth/logout')
+				.set('Authorization', config.accessToken.valid)
+				.expect(204)
+				.then(res => {
+					res.headers['set-cookie'][0].should.be.include("access_token=;");
+					should.not.exist(res.headers['Authorization']);
+					done();
+				})
+				.catch(err => done(err));
+		});
+
+		afterEach(done => {
+			Customers.remove({})
+				.then(() => done())
+				.catch(err => done(err));
+		})
+	});
+
+	describe('Auth Middleware', () => {
+		it('비정상적인 토큰을 이용하여 로그아웃을 요청하면 401을 리턴한다', done => {
+			request.post('/auth/logout')
+				.set('Authorization', config.accessToken.invalid)
+				.expect(401)
+				.then(res => {
+					res.body.message.should.be.eql('Token is not a jwt');
+					done();
+				})
+				.catch(err => done(err));
+		});
+
+		it('만료 토큰을 이용하여 로그아웃을 요청하면 401을 리턴한다', done => {
+			request.post('/auth/logout')
+				.set('Authorization', config.accessToken.expired)
+				.expect(401)
+				.then(res => {
+					res.body.message.should.be.eql('Expired Token');
+					done();
+				})
+				.catch(err => done(err));
+		});
+
+		it('비회원이 로그아웃을 요청하면 403을 리턴한다', done => {
+			request.post('/auth/logout')
+				.set('Authorization', config.accessToken.valid)
+				.expect(403)
+				.then(res => {
+					res.body.message.should.be.eql('Not User');
+					done();
+				})
 				.catch(err => done(err));
 		});
 	});

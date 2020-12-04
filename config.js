@@ -50,9 +50,20 @@ config.test = {
     testCustomerName: 'TestCustomer',
     testProjectId: 99999999,
     web: {},
+    testUser: {
+        _id: "5fae6392bf0b6145db146775",
+        email: 'test@test.com',
+        password: 'test11',
+        companyName: 'testMakers'
+    },
     jwt: {
-        secret: process.env.JWT_SECRET,
+        secret: "testSecretKey",
         expiresIn: process.env.JWT_EXPIRES_IN,
+    },
+    accessToken: {
+        valid: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDcwNzI1NDAsImV4cCI6MTAxNjA3MDcyNTM5LCJpZCI6IjVmYWU2MzkyYmYwYjYxNDVkYjE0Njc3NSJ9.RwaowkqxPYCOeY-QhX-shdnE0_B7SCThDIRFheIkohA",
+        expired: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDcwNjgyODQsImV4cCI6MTYwNzA2ODI4NSwiaXNzIjoiNWZhZTYzOTJiZjBiNjE0NWRiMTQ2Nzc1In0.ciMEsYhy00stqMsSyZOO940hbfJiWHdFCmGSm3fGRgo",
+        invalid: "invalid"
     }
 };
 
