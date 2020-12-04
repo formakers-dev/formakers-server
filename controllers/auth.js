@@ -53,6 +53,7 @@ exports.login = async (req, res, next) => {
 	const { email, password } = req.body;
 
 	if (!email || !password) {
+		// 400 : empty argument
 		return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요.' });
 	}
 
@@ -60,7 +61,7 @@ exports.login = async (req, res, next) => {
 		const customer = await Customer.findOne({email});
 
 		if (!customer) {
-			return res.status(401).json({ error: '계정정보가 존재하지 않습니다.' });
+			return res.sendStatus(204);
 		} else if (!await customer.comparePassword(password)) {
 			return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
 		}

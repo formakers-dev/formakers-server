@@ -138,15 +138,47 @@ describe('Auth', () => {
 		});
 
 		it('유저가 필수 필드값을 전달하지 않으면 400을 리턴한다', done => {
+			const reqBody = {
+				email: 'fomes@formakers.net'
+			};
 
+			request.post('/auth/login')
+				.send(reqBody)
+				.expect(400)
+				.then(res => {
+					res.body.error.should.be.eql('이메일과 비밀번호를 입력해주세요.');
+					done();
+				})
+				.catch(err => done(err));
 		});
 
-		it('존재하지 않는 유저일 경우 401을 리턴한다', done => {
+		it('존재하지 않는 유저일 경우 204를 리턴한다', done => {
+			const reqBody = {
+				email: 'ghost@formakers.net',
+				password: 'test11'
+			};
 
+			request.post('/auth/login')
+				.send(reqBody)
+				.expect(204)
+				.then(() => done())
+				.catch(err => done(err));
 		});
 
 		it('비밀번호가 일치하지 않을 경우 401을 리턴한다', done => {
+			const reqBody = {
+				email: 'fomes@formakers.net',
+				password: 'test12'
+			};
 
+			request.post('/auth/login')
+				.send(reqBody)
+				.expect(401)
+				.then(res => {
+					res.body.error.should.be.eql('비밀번호가 일치하지 않습니다.');
+					done();
+				})
+				.catch(err => done(err));
 		});
 
 		afterEach(done => {
