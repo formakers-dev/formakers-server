@@ -68,8 +68,8 @@ exports.login = async (req, res, next) => {
 
 		const token = generateToken(customer._id.toString());
 
-		res.setHeader('Authorization', token);
-		res.sendStatus(200);
+		console.log(res.headers);
+		res.status(200).json({token : token});
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: err.message });
@@ -81,6 +81,6 @@ exports.login = async (req, res, next) => {
 // @access      Private
 exports.logout = (req, res, next) => {
 	res.clearCookie('access_token');
-	res.removeHeader('Authorization');
+	res.removeHeader('x-access-token');
 	return res.sendStatus(204);
 }

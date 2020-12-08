@@ -132,7 +132,7 @@ describe('Auth', () => {
 				.send(reqBody)
 				.expect(200)
 				.then(res => {
-					should.exist(res.headers.authorization);
+					should.exist(res.body.token);
 					done();
 				})
 				.catch(err => done(err));
@@ -203,11 +203,11 @@ describe('Auth', () => {
 
 		it('유저가 로그아웃을 요청하면 인증 관련 필드값들이 삭제되고 204를 리턴한다', done => {
 			request.post('/auth/logout')
-				.set('Authorization', config.accessToken.valid)
+				.set('x-access-token', config.accessToken.valid)
 				.expect(204)
 				.then(res => {
 					res.headers['set-cookie'][0].should.be.include("access_token=;");
-					should.not.exist(res.headers['Authorization']);
+					should.not.exist(res.headers['x-access-token']);
 					done();
 				})
 				.catch(err => done(err));
@@ -223,7 +223,7 @@ describe('Auth', () => {
 	describe('Auth Middleware', () => {
 		it('비정상적인 토큰을 이용하여 로그아웃을 요청하면 401을 리턴한다', done => {
 			request.post('/auth/logout')
-				.set('Authorization', config.accessToken.invalid)
+				.set('x-access-token', config.accessToken.invalid)
 				.expect(401)
 				.then(res => {
 					res.body.message.should.be.eql('Token is not a jwt');
@@ -234,7 +234,7 @@ describe('Auth', () => {
 
 		it('만료 토큰을 이용하여 로그아웃을 요청하면 401을 리턴한다', done => {
 			request.post('/auth/logout')
-				.set('Authorization', config.accessToken.expired)
+				.set('x-access-token', config.accessToken.expired)
 				.expect(401)
 				.then(res => {
 					res.body.message.should.be.eql('Expired Token');
@@ -245,7 +245,7 @@ describe('Auth', () => {
 
 		it('비회원이 로그아웃을 요청하면 403을 리턴한다', done => {
 			request.post('/auth/logout')
-				.set('Authorization', config.accessToken.valid)
+				.set('x-access-token', config.accessToken.valid)
 				.expect(403)
 				.then(res => {
 					res.body.message.should.be.eql('Not User');

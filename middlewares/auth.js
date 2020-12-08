@@ -3,7 +3,7 @@ const config = require('../config');
 const Customers = require('../models/customers');
 
 exports.verifyToken = (req, res, next) => {
-	const token = req.headers.authorization;
+	const token = req.headers['x-access-token'];
 
 	if (!token) {
 		return res.status(401).json({message: "Empty Token"});
