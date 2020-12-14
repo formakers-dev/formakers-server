@@ -42,6 +42,7 @@ app.use(session({secret: 'appbeeSecret',
 app.use('/users', require('./routers/users'));
 app.use('/requests', require('./routers/requests'));
 app.use('/auth', require('./routers/auth'));
+app.use('/beta-tests', require('./routers/betaTests'));
 
 http.createServer(app).listen(port, function () {
     console.log('Express server listening on port ' + port);

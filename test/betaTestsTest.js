@@ -56,26 +56,40 @@ describe('BetaTests', () => {
         .then(res => {
 
           res.body.length.should.be.eql(2);
-          res.body.sort((a, b) => a._id - b._id);
+          const betaTests = res.body.sort((a, b) => a._id.toString() - b._id.toString() ? 1 : -1);
 
           // res.body[0]._id.should.be.eql("5f28cfae73f6d2001745886a");
-          res.body[0].title.should.be.eql("꿀잼게임");
-          res.body[0].openDate.should.be.eql(new Date("2020-12-04T00:00:00.306Z"));
-          res.body[0].closeDate.should.be.eql( new Date("2020-12-14T14:59:59.000Z"));
-          res.body[0].coverImageUrl.should.be.eql("https://i.imgur.com/XQGrp7g11jpg");
-          res.body[0].customerId.should.be.eql(config.testUser._id);
+          betaTests[0].title.should.be.eql("꿀잼게임");
+          betaTests[0].openDate.should.be.eql("2020-12-04T00:00:00.306Z");
+          betaTests[0].closeDate.should.be.eql("2020-12-14T14:59:59.000Z");
+          betaTests[0].coverImageUrl.should.be.eql("https://i.imgur.com/XQGrp7g11jpg");
+          betaTests[0].customerId.should.be.eql(config.testUser._id);
 
-          res.body[1].title.should.be.eql("[숫자야구] 게임 테스트");
-          res.body[1].openDate.should.be.eql(new Date("2020-08-04T00:00:00.306Z"));
-          res.body[1].closeDate.should.be.eql( new Date("2020-08-14T14:59:59.000Z"));
-          res.body[1].coverImageUrl.should.be.eql( "https://i.imgur.com/XQGrp7g.jpg");
-          res.body[1].customerId.should.be.eql(config.testUser._id);
+          betaTests[1].title.should.be.eql("[숫자야구] 게임 테스트");
+          betaTests[1].openDate.should.be.eql("2020-08-04T00:00:00.306Z");
+          betaTests[1].closeDate.should.be.eql("2020-08-14T14:59:59.000Z");
+          betaTests[1].coverImageUrl.should.be.eql( "https://i.imgur.com/XQGrp7g.jpg");
+          betaTests[1].customerId.should.be.eql(config.testUser._id);
 
           done();
         })
         .catch(err => done(err));
-
     });
+
+    describe("요청한 고객의 베타테스트 의뢰 목록이 없으면", () => {
+      beforeEach(done => {
+        BetaTests.remove({ customerId: config.testUser._id })
+          .then(() => done())
+          .catch(err => done(err));
+      });
+
+      it("204를 반환한다", done => {
+        request.get('/beta-tests')
+          .set('x-access-token', config.accessToken.valid)
+          .expect(204, done);
+      });
+    });
+
 
     afterEach(done => {
       Customers.remove({})
