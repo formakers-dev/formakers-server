@@ -10,15 +10,15 @@ exports.verifyToken = (req, res, next) => {
 	}
 
 	jwt.verify(token, config.jwt.secret, (err, decoded) => {
-		const userId = decoded.id;
-
 		if (err instanceof jwt.TokenExpiredError) {
 			return res.status(401).json({message: "Expired Token"});
 		}
 
-		if (!userId) {
+		if (!decoded || !decoded.id) {
 			return res.status(401).json({message: "Token is not a jwt"});
 		}
+
+		const userId = decoded.id;
 
 		Customers.findById(userId)
 			.then(user => {
