@@ -4,8 +4,14 @@ const Auth = require('../middlewares/auth');
 
 const router = express.Router();
 
+router.use(Auth.verifyToken);
+
 router
 	.route('/')
-	.get(Auth.verifyToken, BetaTestsController.getBetaTestsOfCustomer);
+	.get(BetaTestsController.getBetaTestsOfCustomer);
+
+router
+	.route('/:testId')
+	.get(BetaTestsController.getInfoOfBetaTest);
 
 module.exports = router;

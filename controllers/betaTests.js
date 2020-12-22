@@ -14,3 +14,14 @@ exports.getBetaTestsOfCustomer = (req, res, next) => {
 			res.sendStatus(500);
 		});
 }
+
+exports.getInfoOfBetaTest = (req, res, next) => {
+	BetaTests.findById(req.params.testId)
+		.then(betaTest => {
+			res.status(200).json(betaTest);
+		})
+		.catch(err => {
+			console.error(err);
+			res.sendStatus(500);
+		});
+}
