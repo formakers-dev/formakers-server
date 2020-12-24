@@ -14,4 +14,8 @@ router
 	.route('/:testId')
 	.get(BetaTestsController.getInfoOfBetaTest);
 
+router
+	.route('/:testId/missions')
+	.get(BetaTestsController.getMissions);
+
 module.exports = router;

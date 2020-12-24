@@ -6,6 +6,7 @@ const request = require('supertest').agent(server);
 const config = require('../config');
 const Customers = require('../models/customers');
 const BetaTests = require('../models/betaTests');
+const Missions = require('../models/missions');
 const setupTestMiddleware = require('./setupTestMiddleware');
 const ObjectId = require('mongoose').Types.ObjectId;
 
@@ -157,5 +158,93 @@ describe('BetaTests', () => {
         .then(() => done())
         .catch(err => done(err));
     });
+  });
+
+  describe('GET /beta-tests/:testId/missions', () => {
+    beforeEach(done => {
+      const missions = [
+        {
+          betaTestId: ObjectId('5f28cfae73f6d2001745886c'),
+          title: "게임 설치 & 플레이",
+          description: "[게임명] 게임을 설치하고 플레이하세요.",
+          descriptionImageUrl: "https://i.imgur.com/XJNFDjy.png",
+          guide: "• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.",
+          packageName: "com.formakers.fomes",
+          actionType: "default",
+          action: "https://play.google.com/store/apps/details?id=com.formakers.fomes",
+          "options": ["mandatory", "repeatable"],
+          "order": 1,
+          "type": "install",
+        },
+        {
+          betaTestId: ObjectId('5f28cfae73f6d20017458861'),
+          title: "I don't want it",
+          description: "nonono",
+          descriptionImageUrl: "https://i.imgur.com/XJNFDjy.png3",
+          guide: "• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.3",
+          packageName: "com.formakers.fomes3",
+          actionType: "default",
+          action: "https://play.google.com/store/apps/details?id=com.formakers.fomes",
+          "order": 3,
+          "type": "survey",
+        },
+        {
+          betaTestId: ObjectId('5f28cfae73f6d2001745886c'),
+          title: "mission 2",
+          description: "[게임명] 게임을 설치하고 플레이하세요2",
+          descriptionImageUrl: "https://i.imgur.com/XJNFDjy.png2",
+          guide: "• 미션에 참여하면 테스트 대상 게임 보호를 위해 무단 배포 금지에 동의한 것으로 간주됩니다.2",
+          packageName: "com.formakers.fomes2",
+          actionType: "default",
+          action: "https://play.google.com/store/apps/details?id=com.formakers.fomes",
+          "options": ["mandatory"],
+          "order": 2,
+          "type": "play",
+        }
+      ];
+
+      Customers.create(config.testUser)
+        .then(() => Missions.create(missions))
+        .then(() => done())
+        .catch(err => done(err));
+    });
+
+    it('특정 베타테스트의 미션 목록을 조회한다', done => {
+      request.get('/beta-tests/5f28cfae73f6d2001745886c/missions')
+        .set('x-access-token', config.accessToken.valid)
+        .expect(200)
+        .then(res => {
+          res.body.length.should.be.eql(2);
+          const missions = res.body.sort((a, b) => a.order > b.order ? 1 : -1);
+
+          missions[0].betaTestId.toString().should.be.eql('5f28cfae73f6d2001745886c');
+          missions[0].title.should.be.eql('게임 설치 & 플레이');
+          missions[0].packageName.should.be.eql('com.formakers.fomes');
+          missions[0].actionType.should.be.eql('default');
+          missions[0].action.should.be.eql('https://play.google.com/store/apps/details?id=com.formakers.fomes');
+          missions[0].options.should.be.eql(["mandatory", "repeatable"]);
+          missions[0].order.should.be.eql(1);
+          missions[0].type.should.be.eql('install');
+
+          missions[1].betaTestId.toString().should.be.eql('5f28cfae73f6d2001745886c');
+          missions[1].title.should.be.eql('mission 2');
+          missions[1].packageName.should.be.eql('com.formakers.fomes2');
+          missions[1].actionType.should.be.eql('default');
+          missions[1].action.should.be.eql('https://play.google.com/store/apps/details?id=com.formakers.fomes');
+          missions[1].options.should.be.eql(["mandatory"]);
+          missions[1].order.should.be.eql(2);
+          missions[1].type.should.be.eql('play');
+
+          done();
+        })
+        .catch(err => done(err));
+    });
+
+    afterEach(done => {
+      Customers.remove({})
+        .then(() => Missions.remove({}))
+        .then(() => done())
+        .catch(err => done(err));
+    })
   });
 });
