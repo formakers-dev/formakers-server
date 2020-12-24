@@ -96,6 +96,66 @@ describe('BetaTests', () => {
         .then(() => BetaTests.remove({}))
         .then(() => done())
         .catch(err => done(err));
-    })
+    });
+  });
+
+  describe('GET /beta-tests/:testId', () => {
+    beforeEach(done => {
+      const betaTests = [
+        {
+          _id: ObjectId("5f28cfae73f6d2001745886c"),
+          "openDate" : new Date("2020-08-04T00:00:00.306Z"),
+          "closeDate" : new Date("2020-08-14T14:59:59.000Z"),
+          "title" : "[숫자야구] 게임 테스트",
+          "coverImageUrl" : "https://i.imgur.com/XQGrp7g.jpg",
+          "customerId" : config.testUser._id,
+        },
+        {
+          _id: ObjectId("5f28cfae73f6d2001745886b"),
+          "openDate" : new Date("2020-08-01T00:00:00.306Z"),
+          "closeDate" : new Date("2020-08-15T14:59:59.000Z"),
+          "title" : "게임 테스트2",
+          "coverImageUrl" : "https://i.imgur.com/1234.jpg",
+          "customerId" : ObjectId("5f28cfae73f6d2001745aaaa"), // otherUser
+        },
+        {
+          _id: ObjectId("5f28cfae73f6d2001745886a"),
+          "openDate" : new Date("2020-12-04T00:00:00.306Z"),
+          "closeDate" : new Date("2020-12-14T14:59:59.000Z"),
+          "title" : "꿀잼게임",
+          "coverImageUrl" : "https://i.imgur.com/XQGrp7g11jpg",
+          "customerId" : config.testUser._id,
+        }
+      ];
+
+      Customers.create(config.testUser)
+        .then(() => BetaTests.create(betaTests))
+        .then(() => done())
+        .catch(err => done(err));
+    });
+
+    it('특정 베타테스트의 정보를 반환한다', done => {
+      request.get('/beta-tests/5f28cfae73f6d2001745886c')
+        .set('x-access-token', config.accessToken.valid)
+        .expect(200)
+        .then(res => {
+          // res.body._id.should.be.eql('5f28cfae73f6d2001745886c');
+          res.body.title.should.be.eql('[숫자야구] 게임 테스트');
+          res.body.coverImageUrl.should.be.eql('https://i.imgur.com/XQGrp7g.jpg');
+          res.body.customerId.should.be.eql(config.testUser._id);
+          res.body.openDate.should.be.eql('2020-08-04T00:00:00.306Z');
+          res.body.closeDate.should.be.eql('2020-08-14T14:59:59.000Z');
+
+          done();
+        })
+        .catch(err => done(err));
+    });
+
+    afterEach(done => {
+      Customers.remove({})
+        .then(() => BetaTests.remove({}))
+        .then(() => done())
+        .catch(err => done(err));
+    });
   });
 });
