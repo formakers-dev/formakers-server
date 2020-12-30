@@ -197,6 +197,7 @@ describe('BetaTests', () => {
           packageName: "com.formakers.fomes2",
           actionType: "default",
           action: "https://play.google.com/store/apps/details?id=com.formakers.fomes",
+          feedbackAggregationUrl: "https://play.google.com/store/apps/details?id=com.formakers.fomes2",
           "options": ["mandatory"],
           "order": 2,
           "type": "play",
@@ -234,6 +235,7 @@ describe('BetaTests', () => {
           missions[1].options.should.be.eql(["mandatory"]);
           missions[1].order.should.be.eql(2);
           missions[1].type.should.be.eql('play');
+          missions[1].feedbackAggregationUrl.should.be.eql('https://play.google.com/store/apps/details?id=com.formakers.fomes2');
 
           done();
         })

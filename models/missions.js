@@ -12,6 +12,7 @@ const missionSchema = new mongoose.Schema({
 	actionType: String,
 	action: String,
 	betaTestId: mongoose.Schema.Types.ObjectId,
+	feedbackAggregationUrl: String,
 });
 
 module.exports = mongoose.model('Mission', missionSchema);

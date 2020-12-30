@@ -39,6 +39,7 @@ exports.getMissions = (req, res, next) => {
 		options: 1,
 		order: 1,
 		type: 1,
+		feedbackAggregationUrl: 1,
 	})
 		.then(missions => {
 			res.status(200).json(missions);
