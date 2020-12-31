@@ -49,3 +49,64 @@ exports.getMissions = (req, res, next) => {
 			res.sendStatus(500);
 		})
 }
+
+exports.getMissionResult = (req, res, next) => {
+	Missions.findOne({
+		_id: req.params.missionId,
+		betaTestId: req.params.testId
+	}, {
+		feedbackAggregationUrl: 1
+	})
+		.then(async result => {
+			const idMatchResults = result.feedbackAggregationUrl.match(/https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]*)[?]?.*/);
+			const sheetId = idMatchResults[1];
+
+			const GoogleSpreadsheet = require('google-spreadsheet').GoogleSpreadsheet;
+			const credentials = require('../google-docs-credentials.json');
+			const doc = new GoogleSpreadsheet(sheetId);
+
+			await doc.useServiceAccountAuth(credentials);
+			await doc.loadInfo();
+			const sheet = doc.sheetsByIndex[1];
+
+			// Header
+			await sheet.loadHeaderRow();
+			const rows = await sheet.getRows();
+			const headers = sheet.headerValues
+				.filter(header => header.length > 0)
+				.map(header => {
+					return {
+						key: header,
+						isOptional: rows[0][header],
+						isLongText: rows[1][header],
+						question: rows[2][header]
+					}
+				});
+
+			const headerKeys = headers.map(header => header.key);
+
+			// Answers
+			const answerRows = await sheet.getRows({ offset: 3 });
+			const answers = answerRows.map((answerRow, index) => {
+				const answer = {
+					order: index + 1
+				};
+
+				headerKeys.forEach(header => {
+					answer[header] = answerRow[header];
+				});
+
+				return answer;
+			});
+
+			res.status(200).json({
+				headers,
+				headerKeys,
+				answers
+			});
+		})
+		.catch(err => {
+			console.error(err);
+			res.sendStatus(500);
+		});
+}

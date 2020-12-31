@@ -18,4 +18,8 @@ router
 	.route('/:testId/missions')
 	.get(BetaTestsController.getMissions);
 
+router
+	.route('/:testId/missions/:missionId/result')
+	.get(BetaTestsController.getMissionResult);
+
 module.exports = router;

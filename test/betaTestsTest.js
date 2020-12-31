@@ -57,7 +57,7 @@ describe('BetaTests', () => {
         .then(res => {
 
           res.body.length.should.be.eql(2);
-          const betaTests = res.body.sort((a, b) => a._id.toString() - b._id.toString() ? 1 : -1);
+          const betaTests = res.body.sort((a, b) => a._id.toString() > b._id.toString() ? 1 : -1);
 
           // res.body[0]._id.should.be.eql("5f28cfae73f6d2001745886a");
           betaTests[0].title.should.be.eql("꿀잼게임");
@@ -247,6 +247,44 @@ describe('BetaTests', () => {
         .then(() => Missions.remove({}))
         .then(() => done())
         .catch(err => done(err));
+    })
+  });
+
+  describe('GET /beta-tests/:testId/missions/:missionId/result', () => {
+    beforeEach(done => {
+      const missions = [{
+        _id: ObjectId('5f28cfae73f6d2001745886a'),
+        betaTestId: ObjectId('5f28cfae73f6d2001745886c'),
+        feedbackAggregationUrl: 'https://docs.google.com/spreadsheets/d/1shk6rNq_xQUqQcAk13pbiJ0-ycuFZUv8Lww1JDy0EAE'
+      }, {
+        _id: ObjectId('5f28cfae73f6d2001745886b'),
+        betaTestId: ObjectId('5f28cfae73f6d2001745886c'),
+      }]
+
+      Customers.create(config.testUser)
+      .then(() => Missions.create(missions))
+      .then(() => done())
+      .catch(err => done(err));
+    });
+
+    it('해당 미션의 결과 정보를 반환한다', done => {
+      request.get('/beta-tests/5f28cfae73f6d2001745886c/missions/5f28cfae73f6d2001745886a/result')
+      .set('x-access-token', config.accessToken.valid)
+      .expect(200)
+      .then(res => {
+        res.body.headers.length.should.be.eql(13);
+        res.body.headerKeys.length.should.be.eql(13);
+        res.body.answers.length.should.be.eql(70);
+
+        done();
+      }).catch(err => done(err));
+    })
+
+    afterEach(done => {
+      Customers.remove({})
+      .then(() => Missions.remove({}))
+      .then(() => done())
+      .catch(err => done(err));
     })
   });
 });
